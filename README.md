@@ -1,1 +1,1 @@
-# wisekyy.github.io
+# wise-kansai.github.io
