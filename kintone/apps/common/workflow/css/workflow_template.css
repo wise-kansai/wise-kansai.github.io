@@ -1,0 +1,367 @@
+/*
+ * **************************************************************
+ * kintone : [ワークフロー - Template]アプリ
+ * Customize Css File
+ * @author : Wise Kansai Co.,Ltd.
+ * **************************************************************
+ */
+
+/* 承認者コメントを入力ボタン */
+#input_comment_button {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 13px !important;
+    margin-left: 1.5em;
+    margin-bottom: 15px;
+    color: #fff;
+    background: url("https://img.icons8.com/material-outlined/24/ffffff/comments--v1.png") no-repeat;
+    background-color: #ee8700;
+    background-position: 6px 7px;
+    height: 45px;
+    border: 2px solid #ee8700;
+    position: relative;
+    bottom: -10px;
+    left: -10px;
+}
+
+#input_comment_button:hover {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 13px !important;
+    margin-left: 1.5em;
+    color: #ee8700;
+    background: url("https://img.icons8.com/material-outlined/24/ee8700/comments--v1.png") no-repeat;
+    background-color: #fff;
+    background-position: 6px 7px;
+    height: 45px;
+    border: 2px solid #ee8700;
+    position: relative;
+    bottom: -10px;
+    left: -10px;
+}
+
+/* 承認者コメント入力欄 */
+.control-gaia.control-group-field-gaia.field-8232825 {
+  border: 2px solid #000080;
+  padding: 0px;
+}
+.control-gaia.control-group-field-gaia.field-8232825 > .group-label-gaia {
+  padding: 8px 0px;
+  background-position: 0px;
+  background-color: #000080;
+  color: #fff;
+  font-weight: 700;
+  width: 100%;
+  margin: 0px;
+}
+@media screen and (max-width: 480px) {
+  .control-gaia.control-group-outer-gaia.field-8232825 > div > div.control-group-row-container-gaia {
+    border: 2px solid #000080 !important;
+    border-radius: 0 !important;
+  }
+  .control-gaia.control-group-outer-gaia.field-8232825 > div > h3 {
+    background-color: #000080;
+  }
+  .control-gaia.control-group-outer-gaia.field-8232825 > div > h3 > button.control-group-label {
+    color: #fff;
+    font-weight: 700;
+  }
+}
+
+/* 取下げボタン */
+#customine-button-32:hover {
+    font-size: 14px;
+    padding-right: 0.7rem;
+    border: 2px solid #c9171e;
+    position: relative;
+    left: 20px;
+    color: #c9171e;
+    background: url("https://img.icons8.com/ios-glyphs/24/c9171e/cancel.png") no-repeat;
+    background-color: #ffffff;
+    background-position: 5px 5px;
+    height: 39px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#customine-button-32 {
+    font-size: 14px;
+    padding-right: 0.7rem;
+    position: relative;
+    left: 20px;
+    color: #ffffff;
+    background: url("https://img.icons8.com/ios-glyphs/24/ffffff/cancel.png") no-repeat;
+    background-color: #c9171e;
+    background-position: 7px 7px;
+    height: 39px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px #c9171e;
+}
+
+/* 一覧へ遷移ボタン */
+#customine-button-21 {
+    font-size: 14px;
+    padding: 0.5rem;
+    border: 2px solid #c9171e;
+    position: relative;
+    left: 20px;
+    color: #c9171e;
+    background-color: #ffffff;
+    height: 48px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+    white-space: pre-line;
+    font-weight: bold;
+}
+
+#customine-button-21:hover {
+    font-size: 14px;
+    padding: 0.5rem;
+    position: relative;
+    left: 20px;
+    color: #ffffff;
+    background-color: #c9171e;
+    height: 48px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #c9171e;
+    line-height: 1.5;
+    white-space: pre-line;
+    font-weight: bold;
+}
+
+#customine-button-24 {
+    font-size: 14px;
+    padding: 0.5rem;
+    border: 2px solid #1738c9;
+    position: relative;
+    left: 20px;
+    color: #1738c9;
+    background-color: #ffffff;
+    height: 48px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+    white-space: pre-line;
+    font-weight: bold;
+}
+
+#customine-button-24:hover {
+    font-size: 14px;
+    padding: 0.5rem;
+    position: relative;
+    left: 20px;
+    color: #ffffff;
+    background-color: #1738c9;
+    height: 48px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #1738c9;
+    line-height: 1.5;
+    white-space: pre-line;
+    font-weight: bold;
+}
+
+#customine-button-25 {
+    font-size: 14px;
+    padding: 0.5rem;
+    border: 2px solid #0d6909;
+    position: relative;
+    left: 20px;
+    color: #0d6909;
+    background-color: #ffffff;
+    height: 48px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+    white-space: pre-line;
+    font-weight: bold;
+}
+
+#customine-button-25:hover {
+    font-size: 14px;
+    padding: 0.5rem;
+    position: relative;
+    left: 20px;
+    color: #ffffff;
+    background-color: #0d6909;
+    height: 48px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #0d6909;
+    line-height: 1.5;
+    white-space: pre-line;
+    font-weight: bold;
+}
+
+/* レコード流用ボタン */
+#customine-button-38:hover {
+    font-size: 14px;
+    padding-right: 0.7rem;
+    border: 2px solid #228b22;
+    position: relative;
+    left: 20px;
+    color: #228b22;
+    background: url("https://img.icons8.com/glyph-neue/24/228b22/share-3.png") no-repeat;
+    background-color: #ffffff;
+    background-position: 5px 5px;
+    height: 39px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #customine-button-38 {
+    font-size: 14px;
+    padding-right: 0.7rem;
+    border: 2px #228b22;
+    position: relative;
+    left: 20px;
+    color: #ffffff;
+    background: url("https://img.icons8.com/glyph-neue/24/ffffff/share-3.png") no-repeat;
+    background-color: #228b22;
+    background-position: 7px 7px;
+    height: 39px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /*** Attazoo Tab+ ***/
+  #displayTabs li {
+    padding: 10px 24px !important;
+  }
+
+  /*** フィールドレイアウト : mobile ***/
+  @media only screen and (max-device-width: 480px) {
+    /* 申請ID・申請日時 */
+    .control-gaia.field-8232695 {
+      display: inline-block;
+      padding-right: 8px;
+      width: 43.3%;
+      vertical-align: top;
+      border-bottom: none;
+    }
+    .control-gaia.field-8232707 {
+      display: inline-block;
+      padding-left: 8px;
+      width: 43.3%;
+      border-bottom: none;
+    }
+    /* 部署・申請者 */
+    .control-gaia.field-8232702 {
+      border-top: 1px solid #dadada;
+      border-bottom: none;
+      margin-top: 5px;
+      padding-bottom: .5em;
+    }
+    /* 承認履歴一覧 */
+    .control-gaia.field-8224970 {
+      padding: .5em;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .control-gaia.field-8224972 {
+      padding: .5em;
+      display: inline-block;
+      width: 43.3%;
+    }
+    .control-gaia.field-8224974 {
+      padding: .5em;
+    }
+    .control-gaia.field-8224971 {
+      padding: .5em;
+    }
+    .control-gaia.field-8224975 {
+      padding: .5em;
+    }
+    /* 承認者一覧 */
+    .control-gaia.field-8230901 {
+      display: inline-block;
+      vertical-align: top;
+      border-bottom: none;
+    }
+    .control-value-gaia.value-8230901 {
+      padding: 12px 10px;
+    }
+    .control-gaia.field-8230881 {
+      display: inline-block;
+      width: 55%;
+      border-bottom: none;
+    }
+    .control-gaia.field-8230902 {
+      display: inline-block;
+      vertical-align: top;
+      border-bottom: none;
+    }
+    .control-value-gaia.value-8230902 {
+      padding: 12px 10px;
+    }
+    .control-gaia.field-8230882 {
+      display: inline-block;
+      width: 55%;
+      border-bottom: none;
+    }
+    .control-gaia.field-8230903 {
+      display: inline-block;
+      vertical-align: top;
+      border-bottom: none;
+    }
+    .control-value-gaia.value-8230903 {
+      padding: 12px 10px;
+    }
+    .control-gaia.field-8230883 {
+      display: inline-block;
+      width: 55%;
+      border-bottom: none;
+    }
+    .control-gaia.field-8230904 {
+      display: inline-block;
+      vertical-align: top;
+      border-bottom: none;
+    }
+    .control-value-gaia.value-8230904 {
+      padding: 12px 10px;
+    }
+    .control-gaia.field-8230884 {
+      display: inline-block;
+      width: 55%;
+      border-bottom: none;
+    }
+    .control-gaia.field-8230905 {
+      display: inline-block;
+      vertical-align: top;
+      border-bottom: none;
+    }
+    .control-value-gaia.value-8230905 {
+      padding: 12px 10px;
+    }
+    .control-gaia.field-8230885 {
+      display: inline-block;
+      width: 55%;
+      border-bottom: none;
+    }
+    .control-gaia.field-8230906 {
+      display: inline-block;
+      vertical-align: top;
+      border-bottom: none;
+    }
+    .control-value-gaia.value-8230906 {
+      padding: 12px 10px;
+    }
+    .control-gaia.field-8230886 {
+      display: inline-block;
+      width: 55%;
+      border-bottom: none;
+    }
+  }
