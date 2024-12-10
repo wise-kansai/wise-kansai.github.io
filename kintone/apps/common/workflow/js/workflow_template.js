@@ -1,5 +1,5 @@
 /** **************************************************************
- * kintone : アプリ名
+ * kintone : ワークフロー - Template
  * Customize JavaScript File
  * @author : Tanaka
  ****************************************************************/
@@ -227,12 +227,12 @@ const isMobile = (eventType) => {
 
         let approvalHistory = '';
         if (nextStatus === '完了') {
-            approvalHistory = record.作業者.value[0].name + ' ' + status + ' ---> ' + nextStatus;
+            approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> [' + nextStatus + ']';
         } else {
             if (extractNum(nextStatus)) {
-                approvalHistory = record.作業者.value[0].name + ' ' + status + ' ---> ' + record[`authorized_user_${extractNum(nextStatus)}`].value[0].name + ' ' + nextStatus;
+                approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> ' + record[`authorized_user_${extractNum(nextStatus)}`].value[0].name + ' [' + nextStatus + ']';
             } else {
-                approvalHistory = record.作業者.value[0].name + ' ' + status + ' ---> ' + record.作成者.value.name + ' ' + nextStatus;
+                approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> ' + record.作成者.value.name + ' [' + nextStatus + ']';
             }
         }
 
@@ -841,3 +841,214 @@ function formatDate(date) {
     const seconds = String(date.getSeconds()).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+09:00`;
 }
+
+/* customineにて生成したボタンのスタイルを変更 */
+(function () {
+    // ボタンが生成される親要素を監視（ここではbody全体を監視）
+    const targetNode = document.body;
+
+    // 監視オプション（DOMの子要素追加を監視）
+    const config = { childList: true, subtree: true };
+
+    // ボタンのテキストに基づいて適用するCSSを設定
+    const buttonStyles = {
+        "「自分の承認待ち」 一覧を表示": {
+            css: `
+                font-size: 14px;
+                padding: 0.8rem;
+                border: 2px solid #c9171e;
+                position: relative;
+                left: 20px;
+                color: #c9171e;
+                background-color: #ffffff;
+                background: url("https://img.icons8.com/ios-glyphs/30/c9171e/high-priority.png") no-repeat;
+                background-position: 5px 5px;
+                height: 48px;
+                display: inline-flex;
+                justify-content: flex-end;
+                align-items: center;
+                line-height: 1.5;
+                white-space: pre-line;
+                font-weight: bold;
+                width: 175px;
+            `,
+            hoverCss: `
+                color: #ffffff !important;
+                background: url("https://img.icons8.com/ios-glyphs/30/ffffff/high-priority.png") no-repeat !important;
+                background-position: 5px 5px !important;
+                background-color: #c9171e !important;
+                border: 2px solid #c9171e !important;
+            `
+        },
+        "「自分の作成分」 一覧を表示": {
+            css: `
+                font-size: 14px;
+                padding: 0.8rem;
+                border: 2px solid #1738c9;
+                position: relative;
+                left: 20px;
+                color: #1738c9;
+                background-color: #ffffff;
+                background: url("https://img.icons8.com/ios-glyphs/30/1738c9/signing-a-document.png") no-repeat;
+                background-position: 5px 5px;
+                height: 48px;
+                display: inline-flex;
+                justify-content: flex-end;
+                align-items: center;
+                line-height: 1.5;
+                white-space: pre-line;
+                font-weight: bold;
+                width: 160px;
+            `,
+            hoverCss: `
+                color: #ffffff !important;
+                background: url("https://img.icons8.com/ios-glyphs/30/ffffff/signing-a-document.png") no-repeat !important;
+                background-position: 5px 5px !important;
+                background-color: #1738c9 !important;
+                border: 2px solid #1738c9 !important;
+            `
+        },
+        "「承認済みの全件」 一覧を表示": {
+            css: `
+                font-size: 14px;
+                padding: 0.8rem;
+                border: 2px solid #0d6909;
+                position: relative;
+                left: 20px;
+                color: #0d6909;
+                background-color: #ffffff;
+                background: url("https://img.icons8.com/ios-glyphs/30/0d6909/approval.png") no-repeat;
+                background-position: 5px 5px;
+                height: 48px;
+                display: inline-flex;
+                justify-content: flex-end;
+                align-items: center;
+                line-height: 1.5;
+                white-space: pre-line;
+                font-weight: bold;
+                width: 175px;
+            `,
+            hoverCss: `
+                color: #ffffff !important;
+                background: url("https://img.icons8.com/ios-glyphs/30/ffffff/approval.png") no-repeat !important;
+                background-position: 5px 5px !important;
+                background-color: #0d6909 !important;
+                border: 2px solid #0d6909 !important;
+            `
+        },
+        "取下げ": {
+            css: `
+                font-size: 14px;
+                padding-right: 0.7rem;
+                border: 2px #c9171e;
+                position: relative;
+                left: 20px;
+                color: #ffffff;
+                background: url("https://img.icons8.com/windows/24/ffffff/hand.png") no-repeat;
+                background-color: #c9171e;
+                background-position: 7px 7px;
+                height: 39px;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+            `,
+            hoverCss: `
+                color: #c9171e !important;
+                background-color: #ffffff !important;
+                border: 2px solid #c9171e !important;
+                background: url("https://img.icons8.com/windows/24/c9171e/hand.png") no-repeat !important;
+                background-position: 5px 5px !important;
+            `
+        },
+        "代理承認": {
+            css: `
+                position: relative;
+                left: 40px;
+                color: #ffffff;
+                border: 2px #000080;
+                background: url(https://img.icons8.com/ios-glyphs/24/ffffff/gender-neutral-user.png) no-repeat;
+                background-position: 7px 5px;
+                background-color: #000080;
+                height: 38px;
+                width: 160px;
+                bottom: -1.4px;
+            `,
+            hoverCss: `
+                color: #000080 !important;
+                border: 2px solid #000080 !important;
+                background: url(https://img.icons8.com/ios-glyphs/24/000080/gender-neutral-user.png) no-repeat !important;
+                background-position: 7px 5px !important;
+                background-color: #ffffff !important;
+            `
+        },
+        "レコード流用": {
+            css: `
+                font-size: 14px;
+                padding-right: 0.7rem;
+                border: 2px #228b22;
+                position: relative;
+                left: 20px;
+                color: #ffffff;
+                background: url("https://img.icons8.com/glyph-neue/24/ffffff/share-3.png") no-repeat;
+                background-color: #228b22;
+                background-position: 7px 7px;
+                height: 39px;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+            `,
+            hoverCss: `
+                color: #228b22 !important;
+                background-color: #ffffff !important;
+                border: 2px solid #228b22 !important;
+                background: url("https://img.icons8.com/glyph-neue/24/228b22/share-3.png") no-repeat !important;
+                background-position: 5px 5px !important;
+            `
+        }
+    };
+
+    // MutationObserverのコールバック関数
+    const observerCallback = (mutationsList, observer) => {
+        mutationsList.forEach(mutation => {
+            mutation.addedNodes.forEach(addedNode => {
+                // 追加されたノードがボタン要素か確認
+                if (addedNode.nodeName === 'BUTTON') {
+                    // ボタンのテキストがターゲットのボタンテキストと一致するか確認
+                    const buttonText = addedNode.innerText.trim();
+
+                    // 一致するボタンがあれば、そのCSSを適用
+                    if (buttonStyles[buttonText]) {
+                        // インラインスタイルを適用
+                        addedNode.setAttribute("style", buttonStyles[buttonText].css);
+
+                        // ボタンにhoverのスタイルを適用
+                        const hoverStyle = buttonStyles[buttonText].hoverCss;
+                        const buttonId = addedNode.id;
+                        if (!buttonId) {
+                            buttonId = 'button-' + Date.now(); // 重複しないIDを生成
+                            addedNode.id = buttonId;
+                        }
+
+                        // hover時のスタイルをスタイルタグとして追加
+                        const styleTag = document.createElement('style');
+                        styleTag.innerHTML = `
+                            #${buttonId}:hover {
+                                ${hoverStyle}
+                            }
+                        `;
+                        document.head.appendChild(styleTag);
+                    }
+                }
+            });
+        });
+    };
+
+    // MutationObserverインスタンスを作成
+    const observer = new MutationObserver(observerCallback);
+
+    // 監視を開始
+    observer.observe(targetNode, config);
+
+    // 必要に応じて監視を停止する場合
+    // observer.disconnect();
+})();
