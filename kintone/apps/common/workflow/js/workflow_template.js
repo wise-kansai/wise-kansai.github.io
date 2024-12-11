@@ -342,10 +342,10 @@ const isMobile = (eventType) => {
                 workflowBody.query += ' and root_department in (PRIMARY_ORGANIZATION())';
 
                 // 取消申請画面へ遷移時 > 遷移前の承認経路にて承認ルート取得
-                let beforeWorkflowId = sessionStorage.getItem('beforeWorkflowId');
-                sessionStorage.removeItem('beforeWorkflowId');
-                if (beforeWorkflowId) {
-                    workflowBody.query = `workflow_id = "${beforeWorkflowId}"`;
+                let beforeWorkflowKey = sessionStorage.getItem('beforeWorkflowKey');
+                sessionStorage.removeItem('beforeWorkflowKey');
+                if (beforeWorkflowKey) {
+                    workflowBody.query = `workflow_lookup_key = "${beforeWorkflowKey}"`;
                     console.log(workflowBody.query);
                 }
 
