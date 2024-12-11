@@ -167,33 +167,9 @@ const isMobile = (eventType) => {
                         headerMenuSpace = kintone.app.record.getHeaderMenuSpaceElement();
                         headerMenuSpace.appendChild(headerMenuSpace.appendChild(proxyApprovalBtn));
                     }
-                    
+
                 }
             }
-        }
-        return event;
-    })
-})();
-
-/*
-* ---------------------------------------
-* ステータス：完了時 > 承認完了日時追加
-* @device: PC, mobile
-* ---------------------------------------
-*/
-(() => {
-    'use strict';
-    const events = [
-        'app.record.detail.process.proceed',
-        'mobile.app.record.detail.process.proceed'
-    ];
-    kintone.events.on(events, (event) => {
-        const record = event.record;
-        const nextStatus = event.nextStatus.value;
-        const now = new Date();
-        const formattedDate = now.toISOString().slice(0, 16);
-        if (nextStatus === '完了') {
-            record.complete_approval_datetime.value = formattedDate;
         }
         return event;
     })
@@ -273,57 +249,6 @@ const isMobile = (eventType) => {
         } catch (e) {
             console.log(e);
         }
-
-        // await Swal.fire({
-        //     input: 'textarea',
-        //     inputLabel: 'コメントがない場合は「OK」を押してください',
-        //     inputPlaceholder: `${action}時コメントがあれば入力してください`,
-        // }).then(async r => {
-        //     if (r.isConfirmed) {
-        //         let approvalHistory = '';
-        //         if (action === '完了') {
-        //             approvalHistory = record.作業者.value[0].name + ' ' + status + ' ---> ' + nextStatus;
-        //         } else {
-        //             if (extractNum(nextStatus)) {
-        //                 approvalHistory = record.作業者.value[0].name + ' ' + status + ' ---> ' + record[`authorized_user_${extractNum(nextStatus)}`].value[0].name + ' ' + nextStatus;
-        //             } else {
-        //                 approvalHistory = record.作業者.value[0].name + ' ' + status + ' ---> ' + record.作成者.value.name + ' ' + nextStatus;
-        //             }
-        //         }
-
-        //         const data = {
-        //             'approval_date': {
-        //                 value: formatDate(new Date())
-        //             },
-        //             'approval_action': {
-        //                 value: action
-        //             },
-        //             'approver_comment': {
-        //                 value: r.value
-        //             },
-        //             'approval_status_history': {
-        //                 value: approvalHistory
-        //             },
-        //             'approver_user': {
-        //                 value: [{ code: record.作業者.value[0].code }]
-        //             },
-        //             'source_application_id': {
-        //                 value: appTmpId
-        //             }
-        //         };
-
-        //         const params = {
-        //             app: 324, // todo
-        //             record: data,
-        //         };
-
-        //         try {
-        //             await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', params);
-        //         } catch (e) {
-        //             console.log(e);
-        //         }
-        //     }
-        // });
         return event;
     })
 })();
@@ -415,6 +340,14 @@ const isMobile = (eventType) => {
                 })
 
                 workflowBody.query += ' and root_department in (PRIMARY_ORGANIZATION())';
+
+                // 取消申請画面へ遷移時 > 遷移前の承認経路にて承認ルート取得
+                let beforeWorkflowId = sessionStorage.getItem('beforeWorkflowId');
+                sessionStorage.removeItem('beforeWorkflowId');
+                if (beforeWorkflowId) {
+                    workflowBody.query = `workflow_id = "${beforeWorkflowId}"`;
+                    console.log(workflowBody.query);
+                }
 
                 // 承認経路の取得
                 await kintone.api(getPath, 'GET', workflowBody, async (resp) => {
@@ -1002,6 +935,30 @@ function formatDate(date) {
                 background-color: #ffffff !important;
                 border: 2px solid #228b22 !important;
                 background: url("https://img.icons8.com/glyph-neue/24/228b22/share-3.png") no-repeat !important;
+                background-position: 5px 5px !important;
+            `
+        },
+        "取消申請": {
+            css: `
+                font-size: 14px;
+                padding-right: 0.7rem;
+                border: 2px #000;
+                position: relative;
+                left: 20px;
+                color: #ffffff;
+                background: url(https://img.icons8.com/ios-glyphs/24/ffffff/cancel.png) no-repeat;
+                background-color: #000;
+                background-position: 7px 7px;
+                height: 39px;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+            `,
+            hoverCss: `
+                color: #000 !important;
+                background-color: #ffffff !important;
+                border: 2px solid #000 !important;
+                background: url(https://img.icons8.com/ios-glyphs/24/000/cancel.png) no-repeat !important;
                 background-position: 5px 5px !important;
             `
         }
