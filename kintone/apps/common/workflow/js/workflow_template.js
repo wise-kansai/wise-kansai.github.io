@@ -133,7 +133,7 @@ const isMobile = (eventType) => {
         const path = '/k/v1/record/assignees.json';
         const record = event.record;
         const status = record['ステータス'].value;
-        if (status !== '完了') {
+        if (status !== '決裁') {
             const operator = record['作業者'].value[0].code;
             const loginUser = kintone.getLoginUser().code;
             const authArr = [];
@@ -202,7 +202,7 @@ const isMobile = (eventType) => {
         }
 
         let approvalHistory = '';
-        if (nextStatus === '完了') {
+        if (nextStatus === '決裁') {
             approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> [' + nextStatus + ']';
         } else {
             if (extractNum(nextStatus)) {
