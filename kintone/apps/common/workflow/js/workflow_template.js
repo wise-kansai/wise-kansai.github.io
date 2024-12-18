@@ -429,6 +429,11 @@ const isMobile = (eventType) => {
                                 // 承認者が選択されていない場合
                                 if (groupArr[i].length > 0) {
                                     const groupCode = { code: groupArr[i][0].code };
+                                    // ワークフロー - 営業担当の場合、承認ユーザ設定しない
+                                    if (groupArr[i][0].code === 'workflow-sales-group') {
+                                        return;
+                                    }
+
                                     // グループ内の所属ユーザーを取得
                                     // ---------- api ----------
                                     await kintone.api(usersInGroupPath, 'GET', groupCode, async (resp) => {
