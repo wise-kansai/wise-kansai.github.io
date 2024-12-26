@@ -267,3 +267,13 @@
 .kintone-app-headermenu-space .easy-search-text {
   width: 200px !important;
 }
+
+/*
+ * --------------------------
+ * Plugin Design Toyokumo
+ * --------------------------
+ */
+/** kMailer **/
+.kmailer {
+  display: none;
+}
