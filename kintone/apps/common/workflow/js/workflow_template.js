@@ -210,8 +210,13 @@ const isMobile = (eventType) => {
             } else {
                 approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> ' + record.作成者.value.name + ' [' + nextStatus + ']';
             }
-        }
+      }
 
+      // 元レコードの値を更新(承認者コメントを、最新の承認者コメント欄に移動)
+      record.recent_authorizer_comment.value = comment;
+      record.request_approval_comment.value = '';
+
+      // 承認履歴アプリへのレコード追加
         const data = {
             'source_app_id': {
                 value: appId
@@ -237,15 +242,16 @@ const isMobile = (eventType) => {
             'approver_user': {
                 value: [{ code: record.作業者.value[0].code }]
             }
-        };
+      };
 
         const params = {
             app: 324, // todo
             record: data,
-        };
+      };
 
-        try {
-            await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', params);
+      try {
+        // 承認履歴
+        await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', params);
         } catch (e) {
             console.log(e);
         }
