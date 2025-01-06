@@ -193,6 +193,7 @@ const isMobile = (eventType) => {
         const nextStatus = event.nextStatus.value;
         const status = event.status.value;
         const comment = record.request_approval_comment.value;
+        const worker = record.作業者.value[0].code;
         // ↓アプリごとに変更必要
         let appId;
         if (isMobile(event.type)) {
@@ -212,9 +213,12 @@ const isMobile = (eventType) => {
             }
       }
 
-      // 元レコードの値を更新(承認者コメントを、最新の承認者コメント欄に移動)
+      // 元レコードの値を更新
+      // - 認者コメントを、最新の承認者コメント欄に移動
+      // - 最新の承認者欄へ値をセット
       record.recent_authorizer_comment.value = comment;
       record.request_approval_comment.value = '';
+      record.recent_authorizer.value = [{ code: worker }];
 
       // 承認履歴アプリへのレコード追加
         const data = {
@@ -240,7 +244,7 @@ const isMobile = (eventType) => {
                 value: approvalHistory
             },
             'approver_user': {
-                value: [{ code: record.作業者.value[0].code }]
+                value: [{ code: worker }]
             }
       };
 
