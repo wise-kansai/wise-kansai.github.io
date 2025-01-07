@@ -189,6 +189,8 @@ const isMobile = (eventType) => {
     ];
     kintone.events.on(events, async (event) => {
         const record = event.record;
+        const appName = record.app_name.value;
+        const recordId = record.レコード番号.value;
         const action = event.action.value;
         const nextStatus = event.nextStatus.value;
         const status = event.status.value;
@@ -201,6 +203,11 @@ const isMobile = (eventType) => {
         const authorizer4 = record.authorizer_4.value;
         const authorizer5 = record.authorizer_5.value;
         const authorizer6 = record.authorizer_6.value;
+        const applicationNotifiedUsers = record.application_notified_users.value;
+        const approvalNotifiedUsers = record.approval_notified_users.value;
+        const applicationNotifiedUsersText = record.application_notified_users_text.value;
+        const approvalNotifiedUsersText = record.approval_notified_users_text.value;
+        const currentMailAddress = record.current_mail_address.value;
         const KESSAI = '決裁';
         const TORISAGE = '取下げ';
         const SASHIMODOSI = '差し戻し';
@@ -222,10 +229,13 @@ const isMobile = (eventType) => {
         const SYOUNINCHU_6 = '6次 承認中';
         // ↓アプリごとに変更必要
         let appId;
+        let url;
         if (isMobile(event.type)) {
             appId = kintone.mobile.app.getId();
+            url = `https://wise-kansai.cybozu.com/k/m/${appId}/show#record=${recordId}`;
         } else {
             appId = kintone.app.getId();
+            url = `https://wise-kansai.cybozu.com/k/${appId}/show#record=${recordId}`;
         }
 
         let approvalHistory = '';
@@ -361,6 +371,27 @@ const isMobile = (eventType) => {
             },
             'approver_user': {
                 value: [{ code: worker }]
+            },
+            'application_notified_users': {
+                value: applicationNotifiedUsers
+            },
+            'approval_notified_users': {
+                value: approvalNotifiedUsers
+            },
+            'application_notified_users_text': {
+                value: applicationNotifiedUsersText
+            },
+            'approval_notified_users_text': {
+                value: approvalNotifiedUsersText
+            },
+            'current_mail_address' : {
+                value: currentMailAddress
+            },
+            'url': {
+                value: url
+            }, 
+            'app_name': {
+                value: appName
             }
         };
 
