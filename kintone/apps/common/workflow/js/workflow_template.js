@@ -194,6 +194,32 @@ const isMobile = (eventType) => {
         const status = event.status.value;
         const comment = record.request_approval_comment.value;
         const worker = record.作業者.value[0].code;
+        const applicantUser = record.applicant_user.value[0].code;
+        const authorizer1 = record.authorizer_1.value;
+        const authorizer2 = record.authorizer_2.value;
+        const authorizer3 = record.authorizer_3.value;
+        const authorizer4 = record.authorizer_4.value;
+        const authorizer5 = record.authorizer_5.value;
+        const authorizer6 = record.authorizer_6.value;
+        const KESSAI = '決裁';
+        const TORISAGE = '取下げ';
+        const SASHIMODOSI = '差し戻し';
+        const SHINSEI = '申請';
+        const SAISHINSEI = '再申請';
+        const SYONIN = '承認';
+        const SASHIMODOSI_SHINSEISYA = '差し戻し(申請者)';
+        const SASHIMODOSI_1 = '差し戻し(1次承認者)';
+        const SASHIMODOSI_2 = '差し戻し(2次承認者)';
+        const SASHIMODOSI_3 = '差し戻し(3次承認者)';
+        const SASHIMODOSI_4 = '差し戻し(4次承認者)';
+        const SASHIMODOSI_5 = '差し戻し(5次承認者)';
+        const MISHINSEI = '未申請';
+        const SYOUNINCHU_1 = '1次 承認中';
+        const SYOUNINCHU_2 = '2次 承認中';
+        const SYOUNINCHU_3 = '3次 承認中';
+        const SYOUNINCHU_4 = '4次 承認中';
+        const SYOUNINCHU_5 = '5次 承認中';
+        const SYOUNINCHU_6 = '6次 承認中';
         // ↓アプリごとに変更必要
         let appId;
         if (isMobile(event.type)) {
@@ -211,16 +237,106 @@ const isMobile = (eventType) => {
             } else {
                 approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> ' + record.作成者.value.name + ' [' + nextStatus + ']';
             }
-      }
+        }
 
-      // 元レコードの値を更新
-      // - 認者コメントを、最新の承認者コメント欄に移動
-      // - 最新の承認者欄へ値をセット
-      record.recent_authorizer_comment.value = comment;
-      record.request_approval_comment.value = '';
-      record.recent_authorizer.value = [{ code: worker }];
+        // 元レコードの値を更新
+        // - 認者コメントを、最新の承認者コメント欄に移動
+        // - 最新の承認者欄へ値をセット
+        record.recent_authorizer_comment.value = comment;
+        record.request_approval_comment.value = '';
+        record.recent_authorizer.value = [{ code: worker }];
 
-      // 承認履歴アプリへのレコード追加
+        // - 現在の通知先の設定
+        // -- action:差し戻しの場合
+        if (action === SASHIMODOSI) {
+            if (nextStatus === SASHIMODOSI_SHINSEISYA) {
+                record.current_mail_address.value = applicantUser;
+            }
+            if (nextStatus === SASHIMODOSI_1) {
+                record.current_mail_address.value = authorizer1;
+            }
+            if (nextStatus === SASHIMODOSI_2) {
+                record.current_mail_address.value = authorizer2;
+            }
+            if (nextStatus === SASHIMODOSI_3) {
+                record.current_mail_address.value = authorizer3;
+            }
+            if (nextStatus === SASHIMODOSI_4) {
+                record.current_mail_address.value = authorizer4;
+            }
+            if (nextStatus === SASHIMODOSI_5) {
+                record.current_mail_address.value = authorizer5;
+            }
+        }
+        // -- action:取下げの場合
+        
+        // -- action:再申請の場合
+        if (action === SAISHINSEI) {
+            if (nextStatus === SYOUNINCHU_1) {
+                record.current_mail_address.value = authorizer1;
+            }
+            if (nextStatus === SYOUNINCHU_2) {
+                record.current_mail_address.value = authorizer2;
+            }
+            if (nextStatus === SYOUNINCHU_3) {
+                record.current_mail_address.value = authorizer3;
+            }
+            if (nextStatus === SYOUNINCHU_4) {
+                record.current_mail_address.value = authorizer4;
+            }
+            if (nextStatus === SYOUNINCHU_5) {
+                record.current_mail_address.value = authorizer5;
+            }
+            if (nextStatus === SYOUNINCHU_6) {
+                record.current_mail_address.value = authorizer6;
+            }
+        }
+        // -- action:申請の場合
+        if (action === SHINSEI) {
+            if (nextStatus === SYOUNINCHU_1) {
+                record.current_mail_address.value = authorizer1;
+            }
+            if (nextStatus === SYOUNINCHU_2) {
+                record.current_mail_address.value = authorizer2;
+            }
+            if (nextStatus === SYOUNINCHU_3) {
+                record.current_mail_address.value = authorizer3;
+            }
+            if (nextStatus === SYOUNINCHU_4) {
+                record.current_mail_address.value = authorizer4;
+            }
+            if (nextStatus === SYOUNINCHU_5) {
+                record.current_mail_address.value = authorizer5;
+            }
+            if (nextStatus === SYOUNINCHU_6) {
+                record.current_mail_address.value = authorizer6;
+            }
+        }
+        // --action:承認の場合
+        if (action === SYONIN) {
+            if (nextStatus === SYOUNINCHU_2) {
+                record.current_mail_address.value = authorizer2;
+            }
+            if (nextStatus === SYOUNINCHU_3) {
+                record.current_mail_address.value = authorizer3;
+            }
+            if (nextStatus === SYOUNINCHU_4) {
+                record.current_mail_address.value = authorizer4;
+            }
+            if (nextStatus === SYOUNINCHU_5) {
+                record.current_mail_address.value = authorizer5;
+            }
+            if (nextStatus === SYOUNINCHU_6) {
+                record.current_mail_address.value = authorizer6;
+            }
+        }
+        // --action:決裁の場合
+        if (action === KESSAI) {
+            record.current_mail_address.value = applicantUser;
+        }
+
+
+        // 承認履歴アプリへのレコード追加
         const data = {
             'source_app_id': {
                 value: appId
@@ -246,16 +362,16 @@ const isMobile = (eventType) => {
             'approver_user': {
                 value: [{ code: worker }]
             }
-      };
+        };
 
         const params = {
             app: 324, // todo
             record: data,
-      };
+        };
 
-      try {
-        // 承認履歴
-        await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', params);
+        try {
+            // 承認履歴
+            await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', params);
         } catch (e) {
             console.log(e);
         }
