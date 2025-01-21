@@ -197,6 +197,8 @@ const isMobile = (eventType) => {
         const comment = record.request_approval_comment.value;
         const worker = record.作業者.value[0].code;
         const applicantUser = record.applicant_user.value[0].code;
+        const applicantEmployeeId = record.applicant_employee_id.value;
+        const applicantDepartment = record.applicant_department.value[0].code;
         const authorizer1 = record.authorizer_1.value;
         const authorizer2 = record.authorizer_2.value;
         const authorizer3 = record.authorizer_3.value;
@@ -279,7 +281,7 @@ const isMobile = (eventType) => {
             }
         }
         // -- action:取下げの場合
-        
+
         // -- action:再申請の場合
         if (action === SAISHINSEI) {
             if (nextStatus === SYOUNINCHU_1) {
@@ -345,6 +347,13 @@ const isMobile = (eventType) => {
             record.current_mail_address.value = applicantUser;
         }
 
+        // 処理者の社員番号と部署を取得
+        const workerEmployeeId = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', { code: worker }).then((resp) => {
+          return resp.users[0].employeeNumber;
+        });
+        const workerDepartment = await kintone.api(kintone.api.url('/v1/user/organizations.json', true), 'GET', { code: worker }).then((resp) => {
+          return resp.organizationTitles[0].organization.code;
+        });
 
         // 承認履歴アプリへのレコード追加
         const data = {
@@ -372,6 +381,12 @@ const isMobile = (eventType) => {
             'approver_user': {
                 value: [{ code: worker }]
             },
+            'approver_employee_id': {
+              value: workerEmployeeId
+            },
+            'approver_dist': {
+              value: [{ code: workerDepartment }]
+            },
             'application_notified_users': {
                 value: applicationNotifiedUsers
             },
@@ -389,9 +404,18 @@ const isMobile = (eventType) => {
             },
             'url': {
                 value: url
-            }, 
+            },
             'app_name': {
                 value: appName
+            },
+            'applicant_user': {
+              value: [{ code: applicantUser }]
+            },
+            'applicant_employee_id': {
+              value: applicantEmployeeId
+            },
+            'applicant_dist': {
+              value: [{ code: applicantDepartment }]
             }
         };
 
