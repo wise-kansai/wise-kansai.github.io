@@ -196,6 +196,8 @@ const isMobile = (eventType) => {
         const status = event.status.value;
         const comment = record.request_approval_comment.value;
         const worker = record.作業者.value[0].code;
+        const title = record.title.value;
+        const applicantDate = record.applicant_date.value;
         const applicantUser = record.applicant_user.value[0].code;
         const applicantEmployeeId = record.applicant_employee_id.value;
         const applicantDepartment = record.applicant_department.value[0].code;
@@ -209,7 +211,6 @@ const isMobile = (eventType) => {
         const approvalNotifiedUsers = record.approval_notified_users.value;
         const applicationNotifiedUsersText = record.application_notified_users_text.value;
         const approvalNotifiedUsersText = record.approval_notified_users_text.value;
-        const currentMailAddress = record.current_mail_address.value;
         const KESSAI = '決裁';
         const TORISAGE = '取下げ';
         const SASHIMODOSI = '差し戻し';
@@ -259,25 +260,32 @@ const isMobile = (eventType) => {
         record.recent_authorizer.value = [{ code: worker }];
 
         // - 現在の通知先の設定
+        let currentMailAddress = '';
         // -- action:差し戻しの場合
         if (action === SASHIMODOSI) {
             if (nextStatus === SASHIMODOSI_SHINSEISYA) {
-                record.current_mail_address.value = applicantUser;
+              record.current_mail_address.value = applicantUser;
+              currentMailAddress = applicantUser;
             }
             if (nextStatus === SASHIMODOSI_1) {
-                record.current_mail_address.value = authorizer1;
+              record.current_mail_address.value = authorizer1;
+              currentMailAddress = authorizer1;
             }
             if (nextStatus === SASHIMODOSI_2) {
-                record.current_mail_address.value = authorizer2;
+              record.current_mail_address.value = authorizer2;
+              currentMailAddress = authorizer2;
             }
             if (nextStatus === SASHIMODOSI_3) {
-                record.current_mail_address.value = authorizer3;
+              record.current_mail_address.value = authorizer3;
+              currentMailAddress = authorizer3;
             }
             if (nextStatus === SASHIMODOSI_4) {
-                record.current_mail_address.value = authorizer4;
+              record.current_mail_address.value = authorizer4;
+              currentMailAddress = authorizer4;
             }
             if (nextStatus === SASHIMODOSI_5) {
-                record.current_mail_address.value = authorizer5;
+              record.current_mail_address.value = authorizer5;
+              currentMailAddress = authorizer5;
             }
         }
         // -- action:取下げの場合
@@ -285,66 +293,84 @@ const isMobile = (eventType) => {
         // -- action:再申請の場合
         if (action === SAISHINSEI) {
             if (nextStatus === SYOUNINCHU_1) {
-                record.current_mail_address.value = authorizer1;
+              record.current_mail_address.value = authorizer1;
+              currentMailAddress = authorizer1;
             }
             if (nextStatus === SYOUNINCHU_2) {
-                record.current_mail_address.value = authorizer2;
+              record.current_mail_address.value = authorizer2;
+              currentMailAddress = authorizer2;
             }
             if (nextStatus === SYOUNINCHU_3) {
-                record.current_mail_address.value = authorizer3;
+              record.current_mail_address.value = authorizer3;
+              currentMailAddress = authorizer3;
             }
             if (nextStatus === SYOUNINCHU_4) {
-                record.current_mail_address.value = authorizer4;
+              record.current_mail_address.value = authorizer4;
+              currentMailAddress = authorizer4;
             }
             if (nextStatus === SYOUNINCHU_5) {
-                record.current_mail_address.value = authorizer5;
+              record.current_mail_address.value = authorizer5;
+              currentMailAddress = authorizer5;
             }
             if (nextStatus === SYOUNINCHU_6) {
-                record.current_mail_address.value = authorizer6;
+              record.current_mail_address.value = authorizer6;
+              currentMailAddress = authorizer6;
             }
         }
         // -- action:申請の場合
         if (action === SHINSEI) {
             if (nextStatus === SYOUNINCHU_1) {
-                record.current_mail_address.value = authorizer1;
+              record.current_mail_address.value = authorizer1;
+              currentMailAddress = authorizer1;
             }
             if (nextStatus === SYOUNINCHU_2) {
-                record.current_mail_address.value = authorizer2;
+              record.current_mail_address.value = authorizer2;
+              currentMailAddress = authorizer2;
             }
             if (nextStatus === SYOUNINCHU_3) {
-                record.current_mail_address.value = authorizer3;
+              record.current_mail_address.value = authorizer3;
+              currentMailAddress = authorizer3;
             }
             if (nextStatus === SYOUNINCHU_4) {
-                record.current_mail_address.value = authorizer4;
+              record.current_mail_address.value = authorizer4;
+              currentMailAddress = authorizer4;
             }
             if (nextStatus === SYOUNINCHU_5) {
-                record.current_mail_address.value = authorizer5;
+              record.current_mail_address.value = authorizer5;
+              currentMailAddress = authorizer5;
             }
             if (nextStatus === SYOUNINCHU_6) {
-                record.current_mail_address.value = authorizer6;
+              record.current_mail_address.value = authorizer6;
+              currentMailAddress = authorizer6;
             }
         }
         // --action:承認の場合
         if (action === SYONIN) {
             if (nextStatus === SYOUNINCHU_2) {
-                record.current_mail_address.value = authorizer2;
+              record.current_mail_address.value = authorizer2;
+              currentMailAddress = authorizer2;
             }
             if (nextStatus === SYOUNINCHU_3) {
-                record.current_mail_address.value = authorizer3;
+              record.current_mail_address.value = authorizer3;
+              currentMailAddress = authorizer3;
             }
             if (nextStatus === SYOUNINCHU_4) {
-                record.current_mail_address.value = authorizer4;
+              record.current_mail_address.value = authorizer4;
+              currentMailAddress = authorizer4;
             }
             if (nextStatus === SYOUNINCHU_5) {
-                record.current_mail_address.value = authorizer5;
+              record.current_mail_address.value = authorizer5;
+              currentMailAddress = authorizer5;
             }
             if (nextStatus === SYOUNINCHU_6) {
-                record.current_mail_address.value = authorizer6;
+              record.current_mail_address.value = authorizer6;
+              currentMailAddress = authorizer6;
             }
         }
         // --action:決裁の場合
         if (action === KESSAI) {
-            record.current_mail_address.value = applicantUser;
+          record.current_mail_address.value = applicantUser;
+          currentMailAddress = applicantUser;
         }
 
         // 処理者の社員番号と部署を取得
@@ -416,6 +442,12 @@ const isMobile = (eventType) => {
             },
             'applicant_dist': {
               value: [{ code: applicantDepartment }]
+            },
+            'applicant_date': {
+                value: applicantDate
+            },
+            'title': {
+                value: title
             }
         };
 
