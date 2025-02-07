@@ -285,6 +285,6 @@
  */
 /** Checkbox **/
 .kuc-checkbox-1-13-0__group__select-menu[borderVisible] {
-  border: none;
-  padding: 0;
+  border: none !important;
+  padding: 0 !important;
 }
