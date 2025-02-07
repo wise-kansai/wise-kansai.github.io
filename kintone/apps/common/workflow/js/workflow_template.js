@@ -1227,3 +1227,48 @@ function formatDate(date) {
     // 必要に応じて監視を停止する場合
     // observer.disconnect();
 })();
+
+
+/*
+* ---------------------------------------
+* ui component 詳細画面
+* @device: PC
+* ---------------------------------------
+*/
+// Checkbox
+(() => {
+  'use strict';
+  kintone.events.on('app.record.detail.show', (event) => {
+    kintone.api(kintone.api.url('/k/v1/app/form/fields', true), 'GET', {
+      app: kintone.app.getId()
+    }).then((response) => {
+      Object.keys(response.properties).filter((fieldCode) => {
+        return response.properties[fieldCode].type === 'CHECK_BOX';
+      }).map((fieldCode) => {
+        return {
+          code: fieldCode,
+          options: Object.keys(response.properties[fieldCode].options).map((option) => {
+            return response.properties[fieldCode].options[option];
+          }).sort((a, b) => {
+            if (a.index < b.index) return -1;
+            return 1;
+          })
+        };
+      }).forEach(async (property) => {
+        const originElement = kintone.app.record.getFieldElement(property.code);
+        const checkboxElement = new Kuc.Checkbox({
+          // name: property.code,
+          items: property.options.map((option) => {
+            return {value: option.label};
+          }),
+          value: event.record[property.code].value,
+          className: 'kuc-checkbox-style',
+          disabled: true
+        });
+
+        await originElement.parentNode.insertBefore(checkboxElement, originElement);
+        await originElement.parentNode.removeChild(originElement);
+      });
+    });
+  });
+})();

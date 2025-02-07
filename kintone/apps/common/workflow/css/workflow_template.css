@@ -277,3 +277,14 @@
 .kmailer {
   display: none;
 }
+
+/*
+ * --------------------------
+ * kintone UI Component v1
+ * --------------------------
+ */
+/** Checkbox **/
+.kuc-checkbox-1-13-0__group__select-menu[borderVisible] {
+  border: none;
+  padding: 0;
+}
