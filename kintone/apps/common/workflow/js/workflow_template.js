@@ -1003,7 +1003,7 @@ function formatDate(date) {
 
     // ボタンのテキストに基づいて適用するCSSを設定
     const buttonStyles = {
-        "「自分の承認待ち」 一覧を表示": {
+        "「自分の対応待ち」 一覧を表示": {
             css: `
                 font-size: 14px;
                 padding: 0.8rem;
