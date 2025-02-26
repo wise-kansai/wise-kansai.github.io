@@ -288,3 +288,24 @@
   border: none !important;
   padding: 0 !important;
 }
+
+/*
+ * --------------------------
+ * kintone
+ * --------------------------
+ */
+/** 複製ボタン **/
+.gaia-argoui-app-menu-copy.gaia-argoui-app-menu {
+  display: none;
+}
+
+/*
+ * --------------------------
+ * kintone action button design
+ * --------------------------
+ */
+/** アクションボタン **/
+.gaia-app-statusbar-action {
+  height: 42px !important;
+  background-color: #000080 !important;
+}
