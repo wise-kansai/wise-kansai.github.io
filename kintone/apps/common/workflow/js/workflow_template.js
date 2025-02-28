@@ -618,7 +618,7 @@ const isMobile = (eventType) => {
           html: EM0001,
           icon: 'error'
         });
-        return event;
+        return false;
       }
 
       const workflow = workflowResponse.records[0];
