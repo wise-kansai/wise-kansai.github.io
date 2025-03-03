@@ -746,7 +746,7 @@ const isMobile = (eventType) => {
           }
         }
       }
-      for (let i = 0; i < assignedApprovers.length; i++) {
+      for (let i = 1; i <= assignedApprovers.length; i++) {
         if (record[`authorizer_${i}`].value === assignedApprovers[assignedApprovers.length - 1]) {
           record[`check_skip_authorizer_${i}`].value = [];
         }
