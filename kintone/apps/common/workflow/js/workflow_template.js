@@ -475,7 +475,7 @@ const isMobile = (eventType) => {
         value: [{ code: applicantDepartment }]
       },
       'applicant_date': {
-        value: applicantDate
+        value: formatDate(new Date(applicantDate))
       },
       'title': {
         value: title
