@@ -565,6 +565,48 @@ const isMobile = (eventType) => {
         }
       }
 
+      // 「取消申請」アプリの場合
+      if (appId === 351) {
+        const cancelApplicationId = record.cancel_application_id.value;
+        const cancelAppId = cancelApplicationId.slice(1, 4);
+        const body = {
+          app: cancelAppId,
+          query: `application_id = "${cancelApplicationId}"`,
+          fields: [
+            'authorizer_1',
+            'authorizer_2',
+            'authorizer_3',
+            'authorizer_4',
+            'authorizer_5',
+            'authorizer_6',
+            'check_skip_authorizer_1',
+            'check_skip_authorizer_2',
+            'check_skip_authorizer_3',
+            'check_skip_authorizer_4',
+            'check_skip_authorizer_5',
+            'check_skip_authorizer_6',
+            'authorized_user_1',
+            'authorized_user_2',
+            'authorized_user_3',
+            'authorized_user_4',
+            'authorized_user_5',
+            'authorized_user_6',
+          ]
+        };
+        const resp = await kintone.api(getPath, 'GET', body);
+        if (resp.records.length === 0) {
+          console.log('取消元の申請が見つかりませんでした' + ' 取消対象の申請ID：' + cancelApplicationId);
+          return false;
+        } else {
+          for (let i = 1; i<= 6; i++) {
+            record[`authorizer_${i}`].value = resp.records[0][`authorizer_${i}`].value;
+            record[`check_skip_authorizer_${i}`].value = resp.records[0][`check_skip_authorizer_${i}`].value;
+            record[`authorized_user_${i}`].value = resp.records[0][`authorized_user_${i}`].value;
+          }
+        }
+        return event;
+      }
+
       // ワークフローの取得条件を設定
       let workflowQuery = `target_app_id = ${appId} and root_department in (PRIMARY_ORGANIZATION())`;
 
