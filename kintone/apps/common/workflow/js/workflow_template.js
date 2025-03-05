@@ -272,6 +272,9 @@ const isMobile = (eventType) => {
       url = `https://wise-kansai.cybozu.com/k/${appId}/show#record=${recordId}`;
     }
 
+    // 申請日時
+    const applicationDateTime = new Date();
+
     let approvalHistory = '';
     if (nextStatus === '決裁') {
       approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> [' + nextStatus + ']';
@@ -350,6 +353,7 @@ const isMobile = (eventType) => {
     }
     // -- action:申請の場合
     if (action === SHINSEI) {
+      record.applicant_date.value = applicationDateTime;
       if (nextStatus === SYOUNINCHU_1) {
         record.current_mail_address.value = authorizer1;
         currentMailAddress = authorizer1;
@@ -424,7 +428,7 @@ const isMobile = (eventType) => {
         value: record.レコード番号.value
       },
       'approval_date': {
-        value: formatDate(new Date())
+        value: formatDate(applicationDateTime)
       },
       'approval_action': {
         value: action
@@ -475,7 +479,7 @@ const isMobile = (eventType) => {
         value: [{ code: applicantDepartment }]
       },
       'applicant_date': {
-        value: formatDate(new Date(applicantDate))
+        value: formatDate(new Date(action === SHINSEI ? applicationDateTime : applicantDate))
       },
       'title': {
         value: title
