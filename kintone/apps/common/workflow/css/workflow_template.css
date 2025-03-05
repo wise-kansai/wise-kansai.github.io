@@ -309,3 +309,8 @@
   height: 42px !important;
   background-color: #000080 !important;
 }
+
+/** 原罪の作業者を変更 **/
+span.gaia-app-statusbar-action.gaia-app-status-reassign {
+  display: none;
+}
