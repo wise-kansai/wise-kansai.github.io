@@ -787,6 +787,13 @@ const isMobile = (eventType) => {
             }
           }
         }
+        // グループ：「ワークフロー - 営業担当」の場合
+        if (group.length > 0 && group[0].code === 'workflow-sales-group') {
+          if (record.sales_user.value.length > 0) {
+            record[`authorized_user_${i}`].value = record.sales_user.value;
+            record[`authorizer_${i}`].value = record.sales_user.value[0].code;
+          }
+        }
       }
       for (let i = 1; i <= assignedApprovers.length; i++) {
         if (record[`authorizer_${i}`].value === assignedApprovers[assignedApprovers.length - 1]) {
