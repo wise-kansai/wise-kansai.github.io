@@ -529,6 +529,7 @@ const isMobile = (eventType) => {
   const ET0001 = '承認経路が見つかりませんでした';
   const ET0002 = '役職内にメンバーが存在しませんでした';
   const ET0003 = '作成者の優先する組織が設定されていませんでした';
+  const ET0004 = '営業担当が見つかりませんでした';
   // エラーメッセージ
   const EM0001 = '管理者に問い合わせをお願いします';
 
@@ -793,9 +794,27 @@ const isMobile = (eventType) => {
         }
         // グループ：「ワークフロー - 営業担当」の場合
         if (group.length > 0 && group[0].code === 'workflow-sales-group') {
-          if (record.sales_user.value.length > 0) {
-            record[`authorized_user_${i}`].value = record.sales_user.value;
-            record[`authorizer_${i}`].value = record.sales_user.value[0].code;
+          // 顧客事業所マスタからレコードを取得
+          const customerId = record.client_office_id.value;
+          const customerReqBody = {
+            app: 29,
+            query: `client_office_id = "${customerId}"`,
+            fields: ['sales','key_clientmaster_lookup']
+          }
+          const customerRecord = await kintone.api(getPath, 'GET', customerReqBody);
+          const salesUserVal = customerRecord.records[0].sales.value;
+          if (customerRecord.records.length === 0) {
+            await Swal.fire({
+              title: ET0004,
+              html: EM0001,
+              icon: 'error'
+            });
+            return event;
+          } else {
+            if (salesUserVal.length > 0) {
+              record[`authorized_user_${i}`].value = salesUserVal;
+              record[`authorizer_${i}`].value = salesUserVal[0].code;
+            }
           }
         }
       }
