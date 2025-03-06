@@ -99,6 +99,17 @@
   bottom: -1.4px;
 }
 
+/* 詳細画面のチェックボックス */
+label.kuc-checkbox-1-13-0__group__select-menu__item__label {
+  color: #333 !important;
+}
+svg.kuc-checkbox-1-13-0__group__select-menu__item__label__icon > rect {
+  stroke: #333 !important;
+}
+svg.kuc-checkbox-1-13-0__group__select-menu__item__label__icon > path {
+  fill: #333 !important;
+}
+
 /*** Attazoo Tab+ ***/
 #displayTabs li {
   padding: 10px 24px !important;
