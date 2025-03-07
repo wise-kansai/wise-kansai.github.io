@@ -353,7 +353,7 @@ const isMobile = (eventType) => {
     }
     // -- action:申請の場合
     if (action === SHINSEI) {
-      record.applicant_date.value = applicationDateTime;
+      record.applicant_date.value = formatDate(applicationDateTime);
       if (nextStatus === SYOUNINCHU_1) {
         record.current_mail_address.value = authorizer1;
         currentMailAddress = authorizer1;
