@@ -530,6 +530,7 @@ const isMobile = (eventType) => {
   const ET0002 = '役職内にメンバーが存在しませんでした';
   const ET0003 = '作成者の優先する組織が設定されていませんでした';
   const ET0004 = '営業担当が見つかりませんでした';
+  const ET0005 = '承認経路を一つに決定できませんでした';
   // エラーメッセージ
   const EM0001 = '管理者に問い合わせをお願いします';
 
@@ -603,7 +604,7 @@ const isMobile = (eventType) => {
           console.log('取消元の申請が見つかりませんでした' + ' 取消対象の申請ID：' + cancelApplicationId);
           return false;
         } else {
-          for (let i = 1; i<= 6; i++) {
+          for (let i = 1; i <= 6; i++) {
             record[`authorizer_${i}`].value = resp.records[0][`authorizer_${i}`].value;
             record[`check_skip_authorizer_${i}`].value = resp.records[0][`check_skip_authorizer_${i}`].value;
             record[`authorized_user_${i}`].value = resp.records[0][`authorized_user_${i}`].value;
@@ -611,6 +612,27 @@ const isMobile = (eventType) => {
         }
         return event;
       }
+
+      // ログインユーザーの情報を取得
+      // 優先する組織が設定されているか確認
+      const userResponse = await kintone.api(userApiPath, 'GET', { codes: loginUserCode });
+      const primaryOrgId = userResponse.users[0].primaryOrganization;
+
+      if (!primaryOrgId) {
+        // 優先する組織が設定されていない場合
+        await Swal.fire({
+          title: ET0003,
+          html: EM0001,
+          icon: 'error'
+        });
+        return event;
+      }
+
+      // 組織情報の取得
+      // 優先する組織のコードと親組織のコードを取得
+      const orgResponse = await kintone.api(orgApiPath, 'GET', { ids: primaryOrgId });
+      const primaryOrgCode = orgResponse.organizations[0].code;
+      const parentOrgCode = orgResponse.organizations[0].parentCode;
 
       // ワークフローの取得条件を設定
       let workflowQuery = `target_app_id = ${appId} and root_department in (PRIMARY_ORGANIZATION())`;
@@ -658,6 +680,7 @@ const isMobile = (eventType) => {
       };
 
       const workflowResponse = await kintone.api(getPath, 'GET', workflowBody);
+      let workflow;
       if (workflowResponse.records.length === 0) {
         // 承認経路マスタから取得したデータが0件の場合
         await Swal.fire({
@@ -666,34 +689,30 @@ const isMobile = (eventType) => {
           icon: 'error'
         });
         return false;
+      } else if (workflowResponse.records.length === 1) {
+        workflow = workflowResponse.records[0];
+      } else {
+        for (let p = 0; p < workflowResponse.records.length; p++) {
+          const orgArr = workflowResponse.records[p].root_department.value;
+          const checkArr = [];
+          orgArr.forEach(el => {
+            checkArr.push(el.code);
+          });
+          if (checkArr.includes(primaryOrgCode)) {
+            workflow = workflowResponse.records[p];
+            break;
+          };
+        }
       }
-
-      const workflow = workflowResponse.records[0];
-
-      // ログインユーザーの情報を取得
-      // 優先する組織が設定されているか確認
-      const userResponse = await kintone.api(userApiPath, 'GET', { codes: loginUserCode });
-      const primaryOrgId = userResponse.users[0].primaryOrganization;
-
-      if (!primaryOrgId) {
-        // 優先する組織が設定されていない場合
+      // 承認経路が一つに決定できなかった場合
+      if (!workflow) {
         await Swal.fire({
-          title: ET0003,
+          title: ET0005,
           html: EM0001,
           icon: 'error'
         });
-        return event;
+        return false;
       }
-
-      // 組織情報の取得
-      // 優先する組織のコードと親組織のコードを取得
-      const orgResponse = await kintone.api(orgApiPath, 'GET', { ids: primaryOrgId });
-      const primaryOrgCode = orgResponse.organizations[0].code;
-      const parentOrgCode = orgResponse.organizations[0].parentCode;
-
-      // 親親組織を取得
-      const grandOrgResponse = await kintone.api(orgApiPath, 'GET', { codes: parentOrgCode });
-      // const grandParentOrgCode = grandOrgResponse.organizations[0].parentCode;
 
       // 承認者リスト
       let assignedApprovers = [];
@@ -794,26 +813,32 @@ const isMobile = (eventType) => {
         }
         // グループ：「ワークフロー - 営業担当」の場合
         if (group.length > 0 && group[0].code === 'workflow-sales-group') {
-          // 顧客事業所マスタからレコードを取得
-          const customerId = record.client_office_id.value;
-          const customerReqBody = {
-            app: 29,
-            query: `client_office_id = "${customerId}"`,
-            fields: ['sales','key_clientmaster_lookup']
-          }
-          const customerRecord = await kintone.api(getPath, 'GET', customerReqBody);
-          const salesUserVal = customerRecord.records[0].sales.value;
-          if (customerRecord.records.length === 0) {
-            await Swal.fire({
-              title: ET0004,
-              html: EM0001,
-              icon: 'error'
-            });
-            return event;
+          // 'sales_user'フィールドが存在する場合
+          if ('sales_user' in record) {
+            record[`authorized_user_${i}`].value = record.sales_user.value;
+            record[`authorizer_${i}`].value = record.sales_user.value[0].code;
           } else {
-            if (salesUserVal.length > 0) {
-              record[`authorized_user_${i}`].value = salesUserVal;
-              record[`authorizer_${i}`].value = salesUserVal[0].code;
+            // 顧客事業所マスタからレコードを取得
+            const customerId = record.client_office_id.value;
+            const customerReqBody = {
+              app: 29,
+              query: `client_office_id = "${customerId}"`,
+              fields: ['sales', 'key_clientmaster_lookup']
+            }
+            const customerRecord = await kintone.api(getPath, 'GET', customerReqBody);
+            const salesUserVal = customerRecord.records[0].sales.value;
+            if (customerRecord.records.length === 0) {
+              await Swal.fire({
+                title: ET0004,
+                html: EM0001,
+                icon: 'error'
+              });
+              return event;
+            } else {
+              if (salesUserVal.length > 0) {
+                record[`authorized_user_${i}`].value = salesUserVal;
+                record[`authorizer_${i}`].value = salesUserVal[0].code;
+              }
             }
           }
         }
