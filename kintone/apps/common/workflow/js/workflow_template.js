@@ -819,6 +819,9 @@ const isMobile = (eventType) => {
         if (group.length > 0 && group[0].code === 'workflow-sales-group') {
           // 'sales_user'フィールドが存在する場合
           if ('sales_user' in record) {
+            if (record.sales_user.value[0].code === loginUserCode) {
+              record[`check_skip_authorizer_${i}`].value = ['Skip'];
+            }
             record[`authorized_user_${i}`].value = record.sales_user.value;
             record[`authorizer_${i}`].value = record.sales_user.value[0].code;
           } else {
