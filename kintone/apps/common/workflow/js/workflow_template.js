@@ -637,16 +637,14 @@ const isMobile = (eventType) => {
       // ワークフローの取得条件を設定
       let workflowQuery = `target_app_id = ${appId} and root_department in (PRIMARY_ORGANIZATION())`;
 
-      // 請求・給与修正届の場合
-      // if (appId === 383) {
-      //   const workflowType = record.workflow_type.value;
-      //   workflowQuery += ` and workflow_type in ("${workflowType}")`;
-      // }
-
       // 「workflow_type」フィールドが存在する場合
       if ('workflow_type' in record) {
-        let workflowType = record.workflow_type.value ? record.workflow_type.value : '';
-        workflowQuery += ` and workflow_type in ("${workflowType}")`;
+        let workflowType = record.workflow_type.value;
+        if (!workflowType || workflowType === '#N/A!') {
+          workflowQuery += ` and workflow_type in ("")`;
+        } else {
+          workflowQuery += ` and workflow_type in ("${workflowType}")`;
+        }
       }
 
       // 取消申請画面へ遷移時 > 遷移前の承認経路にて承認ルート取得
