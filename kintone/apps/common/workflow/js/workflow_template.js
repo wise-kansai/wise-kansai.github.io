@@ -11,11 +11,11 @@ const isMobile = (eventType) => {
 };
 
 /*
-* ---------------------------------------
-* 一覧、追加、編集、詳細画面 > 設定ボタン非表示
-* @device: PC
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * 一覧、追加、編集、詳細画面 > 設定ボタン非表示
+ * @device: PC
+ * ---------------------------------------
+ */
 (() => {
   'use strict';
   const events = [
@@ -43,11 +43,11 @@ const isMobile = (eventType) => {
 })();
 
 /*
-* ---------------------------------------
-* 承認ルート skipチェック時 承認ユーザ無効化
-* @device: PC, mobile
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * 承認ルート skipチェック時 承認ユーザ無効化
+ * @device: PC, mobile
+ * ---------------------------------------
+ */
 (() => {
   'use strict';
   const events = [
@@ -128,11 +128,11 @@ const isMobile = (eventType) => {
 })();
 
 /*
-* ---------------------------------------
-* プロセス管理「取下げ」非表示
-* @device: PC, mobile
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * プロセス管理「取下げ」非表示
+ * @device: PC, mobile
+ * ---------------------------------------
+ */
 (() => {
   'use strict';
   const events = [
@@ -150,11 +150,11 @@ const isMobile = (eventType) => {
 })();
 
 /*
-* ---------------------------------------
-* 代理承認機能
-* @device: PC todo:mobile
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * 代理承認機能
+ * @device: PC todo:mobile
+ * ---------------------------------------
+ */
 (() => {
   'use strict';
   const events = [
@@ -207,11 +207,11 @@ const isMobile = (eventType) => {
 })();
 
 /*
-* ---------------------------------------
-* プロセスアクション時 > コメント入力・履歴登録
-* @device: PC
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * プロセスアクション時 > コメント入力・履歴登録
+ * @device: PC
+ * ---------------------------------------
+ */
 (() => {
   'use strict';
   const events = [
@@ -291,7 +291,9 @@ const isMobile = (eventType) => {
     // - 最新の承認者欄へ値をセット
     record.recent_authorizer_comment.value = comment;
     record.request_approval_comment.value = '';
-    record.recent_authorizer.value = [{ code: worker }];
+    record.recent_authorizer.value = [{
+      code: worker
+    }];
 
     // - 現在の通知先の設定
     let currentMailAddress = '';
@@ -409,10 +411,14 @@ const isMobile = (eventType) => {
     }
 
     // 処理者の社員番号と部署を取得
-    const workerEmployeeId = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', { code: worker }).then((resp) => {
+    const workerEmployeeId = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {
+      code: worker
+    }).then((resp) => {
       return resp.users[0].employeeNumber;
     });
-    const workerDepartment = await kintone.api(kintone.api.url('/v1/user/organizations.json', true), 'GET', { code: worker }).then((resp) => {
+    const workerDepartment = await kintone.api(kintone.api.url('/v1/user/organizations.json', true), 'GET', {
+      code: worker
+    }).then((resp) => {
       return resp.organizationTitles[0].organization.code;
     });
 
@@ -440,13 +446,17 @@ const isMobile = (eventType) => {
         value: approvalHistory
       },
       'approver_user': {
-        value: [{ code: worker }]
+        value: [{
+          code: worker
+        }]
       },
       'approver_employee_id': {
         value: workerEmployeeId
       },
       'approver_dist': {
-        value: [{ code: workerDepartment }]
+        value: [{
+          code: workerDepartment
+        }]
       },
       'application_notified_users': {
         value: applicationNotifiedUsers
@@ -470,13 +480,17 @@ const isMobile = (eventType) => {
         value: appName
       },
       'applicant_user': {
-        value: [{ code: applicantUser }]
+        value: [{
+          code: applicantUser
+        }]
       },
       'applicant_employee_id': {
         value: applicantEmployeeId
       },
       'applicant_dist': {
-        value: [{ code: applicantDepartment }]
+        value: [{
+          code: applicantDepartment
+        }]
       },
       'applicant_date': {
         value: formatDate(new Date(action === SHINSEI ? applicationDateTime : applicantDate))
@@ -502,11 +516,11 @@ const isMobile = (eventType) => {
 })();
 
 /*
-* ---------------------------------------
-* 保存時 承認ルートから承認者を決定
-* @device: PC
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * 保存時 承認ルートから承認者を決定
+ * @device: PC
+ * ---------------------------------------
+ */
 (() => {
   'use strict';
   const events = [
@@ -615,7 +629,9 @@ const isMobile = (eventType) => {
 
       // ログインユーザーの情報を取得
       // 優先する組織が設定されているか確認
-      const userResponse = await kintone.api(userApiPath, 'GET', { codes: loginUserCode });
+      const userResponse = await kintone.api(userApiPath, 'GET', {
+        codes: loginUserCode
+      });
       const primaryOrgId = userResponse.users[0].primaryOrganization;
 
       if (!primaryOrgId) {
@@ -630,7 +646,9 @@ const isMobile = (eventType) => {
 
       // 組織情報の取得
       // 優先する組織のコードと親組織のコードを取得
-      const orgResponse = await kintone.api(orgApiPath, 'GET', { ids: primaryOrgId });
+      const orgResponse = await kintone.api(orgApiPath, 'GET', {
+        ids: primaryOrgId
+      });
       const primaryOrgCode = orgResponse.organizations[0].code;
       const parentOrgCode = orgResponse.organizations[0].parentCode;
 
@@ -759,7 +777,9 @@ const isMobile = (eventType) => {
 
         // グループから承認者を決定する場合
         if (group.length > 0 && group[0].code !== 'workflow-sales-group') {
-          const groupUsers = await kintone.api(usersInGroupPath, 'GET', { code: group[0].code });
+          const groupUsers = await kintone.api(usersInGroupPath, 'GET', {
+            code: group[0].code
+          });
 
           if (groupUsers.users.length === 0) {
             // グループ内の所属ユーザーが存在しない場合
@@ -776,20 +796,24 @@ const isMobile = (eventType) => {
           let orgUsers;
           let orgUserCodes;
           let matchingUsers;
-          for (let count = 0; ; count++) {
+          for (let count = 0;; count++) {
             if (count === 0) {
               orgCode = primaryOrgCode;
             } else if (count === 1) {
               orgCode = parentOrgCode;
             } else {
-              const grandParentOrg = await kintone.api(orgApiPath, 'GET', { codes: [orgCode] });
+              const grandParentOrg = await kintone.api(orgApiPath, 'GET', {
+                codes: [orgCode]
+              });
               orgCode = grandParentOrg.organizations[0].parentCode;
             }
             if (orgCode === 'wisekansai') {
               // 組織コード：wisekansaiの場合
               break;
             }
-            orgUsers = await kintone.api(orgUserApiPath, 'GET', { code: orgCode });
+            orgUsers = await kintone.api(orgUserApiPath, 'GET', {
+              code: orgCode
+            });
             orgUserCodes = orgUsers.userTitles.map(user => user.user.code);
             console.log('orgUserCodes', orgUserCodes);
             matchingUsers = groupUsers.users.filter(user => orgUserCodes.includes(user.code));
@@ -817,6 +841,11 @@ const isMobile = (eventType) => {
         }
         // グループ：「ワークフロー - 営業担当」の場合
         if (group.length > 0 && group[0].code === 'workflow-sales-group') {
+          // 事業所検索が"325 ワイズ関西"の場合
+          if ('client_office_lookup' in record && record.client_office_lookup.value === '325 ワイズ関西 ') {
+            // 承認者(担当営業)をskip
+            record[`check_skip_authorizer_${i}`].value = ['Skip'];
+          }
           // 'sales_user'フィールドが存在する場合
           if ('sales_user' in record) {
             if (record.sales_user.value[0].code === loginUserCode) {
@@ -868,11 +897,11 @@ const isMobile = (eventType) => {
 })();
 
 /*
-* ---------------------------------------
-* コメント入力ボタン
-* @device: PC
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * コメント入力ボタン
+ * @device: PC
+ * ---------------------------------------
+ */
 (() => {
   'use strict';
   const spaceId = 'input_comment_button';
@@ -965,7 +994,10 @@ function formatDate(date) {
   const targetNode = document.body;
 
   // 監視オプション（DOMの子要素追加を監視）
-  const config = { childList: true, subtree: true };
+  const config = {
+    childList: true,
+    subtree: true
+  };
 
   // ボタンのテキストに基づいて適用するCSSを設定
   const buttonStyles = {
@@ -1195,11 +1227,11 @@ function formatDate(date) {
 })();
 
 /*
-* ---------------------------------------
-* ui component 詳細画面
-* @device: PC
-* ---------------------------------------
-*/
+ * ---------------------------------------
+ * ui component 詳細画面
+ * @device: PC
+ * ---------------------------------------
+ */
 // Checkbox
 (() => {
   'use strict';
@@ -1224,7 +1256,9 @@ function formatDate(date) {
         const checkboxElement = new Kuc.Checkbox({
           // name: property.code,
           items: property.options.map((option) => {
-            return { value: option.label };
+            return {
+              value: option.label
+            };
           }),
           value: event.record[property.code].value,
           className: 'kuc-checkbox-style',
