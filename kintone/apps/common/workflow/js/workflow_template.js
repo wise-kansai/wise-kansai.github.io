@@ -842,7 +842,7 @@ const isMobile = (eventType) => {
         // グループ：「ワークフロー - 営業担当」の場合
         if (group.length > 0 && group[0].code === 'workflow-sales-group') {
           // 事業所検索が"325 ワイズ関西"の場合
-          if (record.client_office_lookup.value === '325 ワイズ関西') {
+          if ('client_office_lookup' in record && record.client_office_lookup.value === '325 ワイズ関西 ') {
             // 承認者(担当営業)をskip
             record[`check_skip_authorizer_${i}`].value = ['Skip'];
           }
