@@ -884,6 +884,49 @@ const isMobile = (eventType) => {
           record[`check_skip_authorizer_${i}`].value = [];
         }
       }
+
+      // 設定管理の設定
+      const settingAppId = '353';
+      const settingBody = {
+        app: settingAppId,
+        query: `app_id = "${appId}"`,
+        fields: [
+          'workflow_settings_lookup_key',
+          'viewer_users',
+          'application_notified_users',
+          'application_notified_users_text',
+          'approval_notified_users',
+          'approval_notified_users_text'
+        ],
+      };
+      if ('workflow_type' in record) {
+        const workflowType = record.workflow_type.value;
+        settingBody.query += ` and workflow_type = "${workflowType}"`;
+      }
+      const settingResponse = await kintone.api(getPath, 'GET', settingBody);
+      if (settingResponse.records.length > 0) {
+        let lastApprover = '';
+        for (let t = 6; t > 0; t--) {
+          if (record[`check_skip_authorizer_${t}`].value.length === 0) {
+            lastApprover = record[`authorized_user_${t}`].value;
+            break;
+          }
+        }
+        let approvalNotifiedUsers = settingResponse.records[0].approval_notified_users.value;
+        let approvalNotifiedUsersText = settingResponse.records[0].approval_notified_users_text.value;
+        if (lastApprover) {
+          approvalNotifiedUsers = approvalNotifiedUsers.filter(user => user.code !== lastApprover[0].code);
+          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(lastApprover[0].code, '');
+          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(',,', ',');
+          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(/^,|,$/g, '');
+        }
+        record.workflow_settings_lookup.value = settingResponse.records[0].workflow_settings_lookup_key.value;
+        record.viewer_users.value = settingResponse.records[0].viewer_users.value;
+        record.application_notified_users.value = settingResponse.records[0].application_notified_users.value;
+        record.application_notified_users_text.value = settingResponse.records[0].application_notified_users_text.value;
+        record.approval_notified_users.value = approvalNotifiedUsers;
+        record.approval_notified_users_text.value = approvalNotifiedUsersText;
+      }
       return event;
     } catch (error) {
       console.error('Error in workflow approval route:', error);
