@@ -901,7 +901,9 @@ const isMobile = (eventType) => {
       };
       if ('workflow_type' in record) {
         const workflowType = record.workflow_type.value;
-        settingBody.query += ` and workflow_type = "${workflowType}"`;
+        if (workflowType && workflowType !== '#N/A!') {
+          settingBody.query += ` and workflow_type = "${workflowType}"`;
+        }
       }
       const settingResponse = await kintone.api(getPath, 'GET', settingBody);
       if (settingResponse.records.length > 0) {
