@@ -697,7 +697,8 @@ const isMobile = (eventType) => {
           'group_3',
           'group_4',
           'group_5',
-          'group_6'
+          'group_6',
+          'workflow_lookup_key',
         ]
       };
 
@@ -735,6 +736,8 @@ const isMobile = (eventType) => {
         });
         return false;
       }
+      // 承認ルート検索結果を設定
+      record.approval_route_lookup.value = workflow.workflow_lookup_key.value;
 
       // 承認者リスト
       let assignedApprovers = [];
@@ -757,14 +760,12 @@ const isMobile = (eventType) => {
           // 承認者リストに同じ人物がいる場合 > skip
           if (assignedApprovers.includes(authorizer[0].code)) {
             record[`check_skip_authorizer_${i}`].value = ['Skip'];
-            record[`authorizer_${i}`].value = '';
-            record[`authorized_user_${i}`].value = [];
           } else {
-            record[`authorizer_${i}`].value = authorizer[0].code;
-            record[`authorized_user_${i}`].value = [authorizer[0]];
             // 承認者リストに追加
             assignedApprovers.push(authorizer[0].code);
           }
+          record[`authorizer_${i}`].value = authorizer[0].code;
+          record[`authorized_user_${i}`].value = [authorizer[0]];
 
           if (authorizer[0].code === loginUserCode) {
             // 承認者がログインユーザーの場合
@@ -821,14 +822,12 @@ const isMobile = (eventType) => {
               // 承認者リストに同じ人物がいる場合
               if (assignedApprovers.includes(matchingUsers[0].code)) {
                 record[`check_skip_authorizer_${i}`].value = ['Skip'];
-                record[`authorizer_${i}`].value = '';
-                record[`authorized_user_${i}`].value = [];
               } else {
-                record[`authorizer_${i}`].value = matchingUsers[0].code;
-                record[`authorized_user_${i}`].value = [matchingUsers[0]];
                 // 承認者リストに追加
                 assignedApprovers.push(matchingUsers[0].code);
               }
+              record[`authorizer_${i}`].value = matchingUsers[0].code;
+              record[`authorized_user_${i}`].value = [matchingUsers[0]];
 
               if (matchingUsers[0].code === loginUserCode) {
                 for (let j = i; j >= 1; j--) {
