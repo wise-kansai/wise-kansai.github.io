@@ -12,6 +12,114 @@ const isMobile = (eventType) => {
 
 /*
  * ---------------------------------------
+ * プロセスアクション時 > 承認後の画面遷移
+ * @device: PC
+ * ---------------------------------------
+ */
+(() => {
+  'use strict';
+  const baseUrl = 'https://wise-kansai.cybozu.com/k/';
+  const events = [
+    'app.record.detail.process.proceed',
+    'mobile.app.record.detail.process.proceed'
+  ];
+  kintone.events.on(events, async (event) => {
+    const record = event.record;
+    const recordId = record.$id.value;
+    const appName = record.app_name.value;
+    const action = event.action.value;
+    const status = event.status.value;
+    const nextStatus = event.nextStatus.value;
+    let appId;
+    if (isMobile(event.type)) {
+      appId = kintone.mobile.app.getId();
+    } else {
+      appId = kintone.app.getId();
+    };
+    if (status !== '未申請' && nextStatus !== '決裁') {
+      // クエリの構築
+      const query = `作業者 in (LOGINUSER()) and ステータス not in ("未申請", "決裁") and レコード番号 != "${recordId}" order by applicant_date desc`;
+
+      // 処理が必要なレコード検索
+      try {
+        const body = {
+          app: appId,
+          query: query,
+          fields: [
+            'レコード番号'
+          ]
+        };
+        const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+        const count = resp.records.length;
+        const viewResp = await kintone.api(kintone.api.url('/k/v1/app/views.json', true), 'GET', {
+          app: appId
+        });
+        const views = viewResp.views;
+        let viewId = views['自分の対応待ち'].id;
+        if (count === 0) {
+          // 検索結果0件の場合
+          Swal.fire({
+            icon: 'success',
+            title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」には<br>対応が必要な申請はありません</span>`,
+            html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span>・ポータルへ移動<br>' + 'のどちらかを選択して下さい',
+            showCancelButton: true,
+            confirmButtonText: 'この申請に戻る',
+            cancelButtonText: 'ポータルへ移動',
+            customClass: {
+              popup: 'custom-popup',
+
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              location.reload();
+            } else if (result.isDismissed) {
+              console.log('result.isDismissed');
+              window.location.href = 'https://wise-kansai.cybozu.com/k/#/portal';
+            }
+          });
+        } else {
+          const nextRecordId = resp.records[0].レコード番号.value;
+          const showUrl = baseUrl + appId + `/show#record=${nextRecordId}`;
+          const listUrl = baseUrl + appId + `/?view=${viewId}`;
+          // 検索結果1件以上の場合
+          Swal.fire({
+            icon: 'success',
+            title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」の<br>対応必要数</span><br><br>` + `<span style="font-weight: bold;">残り：</span><span style="color: red; font-weight: bold;">${count} 件</span><br>`,
+            html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span style="color: #008000;">・次の申請を見る</span><br>' +
+              '<span>・未対応の一覧へ</span><br>' + 'のどれかを選択して下さい',
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: 'この申請に戻る',
+            cancelButtonText: '未対応の一覧へ',
+            denyButtonText: '次の申請を見る',
+            customClass: {
+              popup: 'custom-popup',
+              denyButton: 'custom-deny-button',
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              console.log('result.isConfirmed');
+              location.reload();
+            } else if (result.isDismissed) {
+              console.log('result.isDismissed');
+              window.location.href = listUrl;
+            } else if (result.isDenied) {
+              console.log('result.isDenied');
+              window.location.href = showUrl;
+            }
+          });
+        };
+        return event;
+      } catch (e) {
+        console.log(e);
+        return false;
+      }
+    }
+  })
+})();
+
+/*
+ * ---------------------------------------
  * 一覧、追加、編集、詳細画面 > 設定ボタン非表示
  * @device: PC
  * ---------------------------------------
