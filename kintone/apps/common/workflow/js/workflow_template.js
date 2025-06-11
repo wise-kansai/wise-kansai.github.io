@@ -56,64 +56,98 @@ const isMobile = (eventType) => {
         });
         const views = viewResp.views;
         let viewId = views['自分の対応待ち'].id;
-        if (count === 0) {
-          // 検索結果0件の場合
-          Swal.fire({
-            icon: 'success',
-            title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」には<br>対応が必要な申請はありません</span>`,
-            html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span>・ポータルへ移動<br>' + 'のどちらかを選択して下さい',
-            showCancelButton: true,
-            confirmButtonText: 'この申請に戻る',
-            cancelButtonText: 'ポータルへ移動',
-            customClass: {
-              popup: 'custom-popup',
-
-            }
-          }).then((result) => {
-            if (result.isConfirmed) {
-              location.reload();
-            } else if (result.isDismissed) {
-              console.log('result.isDismissed');
-              window.location.href = 'https://wise-kansai.cybozu.com/k/#/portal';
-            }
-          });
-        } else {
-          const nextRecordId = resp.records[0].レコード番号.value;
-          const showUrl = baseUrl + appId + `/show#record=${nextRecordId}`;
-          const listUrl = baseUrl + appId + `/?view=${viewId}`;
-          // 検索結果1件以上の場合
-          Swal.fire({
-            icon: 'success',
-            title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」の<br>対応必要数</span><br><br>` + `<span style="font-weight: bold;">残り：</span><span style="color: red; font-weight: bold;">${count} 件</span><br>`,
-            html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span style="color: #008000;">・次の申請を見る</span><br>' +
-              '<span>・未対応の一覧へ</span><br>' + 'のどれかを選択して下さい',
-            showCancelButton: true,
-            showDenyButton: true,
-            confirmButtonText: 'この申請に戻る',
-            cancelButtonText: '未対応の一覧へ',
-            denyButtonText: '次の申請を見る',
-            customClass: {
-              popup: 'custom-popup',
-              denyButton: 'custom-deny-button',
-            }
-          }).then((result) => {
-            if (result.isConfirmed) {
-              console.log('result.isConfirmed');
-              location.reload();
-            } else if (result.isDismissed) {
-              console.log('result.isDismissed');
-              window.location.href = listUrl;
-            } else if (result.isDenied) {
-              console.log('result.isDenied');
-              window.location.href = showUrl;
-            }
-          });
+        const nextRecordId = resp.records[0].レコード番号.value;
+        const sessionObj = {
+          action: action,
+          appName: appName,
+          count: count,
+          portalUrl: 'https://wise-kansai.cybozu.com/k/#/portal',
+          showUrl: baseUrl + appId + `/show#record=${nextRecordId}`,
+          listUrl: baseUrl + appId + `/?view=${viewId}`
         };
+        sessionStorage.setItem('sessionObj', JSON.stringify(sessionObj));
+        console.log('sessionObj', sessionObj);
         return event;
       } catch (e) {
         console.log(e);
         return false;
       }
+    }
+  })
+})();
+
+/*
+ * ---------------------------------------
+ * プロセスアクション後の詳細画面表示時 > 画面遷移ダイアログを表示
+ * @device: PC
+ * ---------------------------------------
+ */
+(() => {
+  'use strict';
+  const events = [
+    'app.record.detail.show',
+    'mobile.app.record.detail.show'
+  ];
+  kintone.events.on(events, (event) => {
+    if (sessionStorage.getItem('sessionObj')) {
+      const sessionObj = JSON.parse(sessionStorage.getItem('sessionObj'));
+      sessionStorage.removeItem('sessionObj');
+      const action = sessionObj.action;
+      const appName = sessionObj.appName;
+      const count = sessionObj.count;
+      const portalUrl = sessionObj.portalUrl;
+      const showUrl = sessionObj.showUrl;
+      const listUrl = sessionObj.listUrl;
+
+      if (count === 0) {
+        Swal.fire({
+          icon: 'success',
+          title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」には<br>対応が必要な申請はありません</span>`,
+          html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span>・ポータルへ移動<br>' + 'のどちらかを選択して下さい',
+          showCancelButton: true,
+          confirmButtonText: 'この申請に戻る',
+          cancelButtonText: 'ポータルへ移動',
+          customClass: {
+            popup: 'custom-popup',
+
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            location.reload();
+          } else if (result.isDismissed) {
+            console.log('result.isDismissed');
+            window.location.href = portalUrl;
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」の<br>対応必要数</span><br><br>` + `<span style="font-weight: bold;">残り：</span><span style="color: red; font-weight: bold;">${count} 件</span><br>`,
+          html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span style="color: #008000;">・次の申請を見る</span><br>' +
+            '<span>・未対応の一覧へ</span><br>' + 'のどれかを選択して下さい',
+          showCancelButton: true,
+          showDenyButton: true,
+          confirmButtonText: 'この申請に戻る',
+          cancelButtonText: '未対応の一覧へ',
+          denyButtonText: '次の申請を見る',
+          customClass: {
+            popup: 'custom-popup',
+            denyButton: 'custom-deny-button',
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            console.log('result.isConfirmed');
+            location.reload();
+          } else if (result.isDismissed) {
+            console.log('result.isDismissed');
+            window.location.href = listUrl;
+          } else if (result.isDenied) {
+            console.log('result.isDenied');
+            window.location.href = showUrl;
+          }
+        });
+      }
+      return event;
     }
   })
 })();
