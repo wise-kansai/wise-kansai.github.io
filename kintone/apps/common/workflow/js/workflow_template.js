@@ -56,7 +56,10 @@ const isMobile = (eventType) => {
         });
         const views = viewResp.views;
         let viewId = views['自分の対応待ち'].id;
-        const nextRecordId = resp.records[0].レコード番号.value;
+        let nextRecordId = '';
+        if (resp.records.length > 0) {
+          nextRecordId = resp.records[0].レコード番号.value;
+        }
         const sessionObj = {
           action: action,
           appName: appName,
