@@ -756,6 +756,7 @@ const isMobile = (eventType) => {
             'authorized_user_4',
             'authorized_user_5',
             'authorized_user_6',
+            'workflow_settings_lookup',
           ]
         };
         const resp = await kintone.api(getPath, 'GET', body);
@@ -763,6 +764,25 @@ const isMobile = (eventType) => {
           console.log('取消元の申請が見つかりませんでした' + ' 取消対象の申請ID：' + cancelApplicationId);
           return false;
         } else {
+          // 設定管理から取消時の通知先を取得
+          const workflowSettingsLookup = resp.records[0].workflow_settings_lookup.value;
+          if (workflowSettingsLookup) {
+            const workflowSettingsResponse = await kintone.api(getPath, 'GET', {
+              app: 353,
+              query: `workflow_settings_lookup_key = "${workflowSettingsLookup}"`,
+              fields: [
+                'cancel_application_notified_users',
+                'cancel_application_notified_users_text',
+                'cancel_approval_notified_users',
+                'cancel_approval_notified_users_text',
+              ]
+            });
+            record.application_notified_users.value = workflowSettingsResponse.records[0].cancel_application_notified_users.value;
+            record.application_notified_users_text.value = workflowSettingsResponse.records[0].cancel_application_notified_users_text.value;
+            record.approval_notified_users.value = workflowSettingsResponse.records[0].cancel_approval_notified_users.value;
+            record.approval_notified_users_text.value = workflowSettingsResponse.records[0].cancel_approval_notified_users_text.value;
+          }
+          // 取消元の申請の承認者情報を取得
           for (let i = 1; i <= 6; i++) {
             record[`authorizer_${i}`].value = resp.records[0][`authorizer_${i}`].value;
             record[`check_skip_authorizer_${i}`].value = resp.records[0][`check_skip_authorizer_${i}`].value;
