@@ -21,7 +21,7 @@ const isMobile = (eventType) => {
   const baseUrl = 'https://wise-kansai.cybozu.com/k/';
   const events = [
     'app.record.detail.process.proceed',
-    'mobile.app.record.detail.process.proceed'
+    'mobile.app.record.detail.process.proceed',
   ];
   kintone.events.on(events, async (event) => {
     const record = event.record;
@@ -35,7 +35,7 @@ const isMobile = (eventType) => {
       appId = kintone.mobile.app.getId();
     } else {
       appId = kintone.app.getId();
-    };
+    }
     if (status !== '未申請' && nextStatus !== '決裁') {
       // クエリの構築
       const query = `作業者 in (LOGINUSER()) and ステータス not in ("未申請", "決裁") and レコード番号 != "${recordId}" order by applicant_date desc`;
@@ -45,15 +45,21 @@ const isMobile = (eventType) => {
         const body = {
           app: appId,
           query: query,
-          fields: [
-            'レコード番号'
-          ]
+          fields: ['レコード番号'],
         };
-        const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+        const resp = await kintone.api(
+          kintone.api.url('/k/v1/records.json', true),
+          'GET',
+          body
+        );
         const count = resp.records.length;
-        const viewResp = await kintone.api(kintone.api.url('/k/v1/app/views.json', true), 'GET', {
-          app: appId
-        });
+        const viewResp = await kintone.api(
+          kintone.api.url('/k/v1/app/views.json', true),
+          'GET',
+          {
+            app: appId,
+          }
+        );
         const views = viewResp.views;
         let viewId = views['自分の対応待ち'].id;
         let nextRecordId = '';
@@ -66,7 +72,7 @@ const isMobile = (eventType) => {
           count: count,
           portalUrl: 'https://wise-kansai.cybozu.com/k/#/portal',
           showUrl: baseUrl + appId + `/show#record=${nextRecordId}`,
-          listUrl: baseUrl + appId + `/?view=${viewId}`
+          listUrl: baseUrl + appId + `/?view=${viewId}`,
         };
         sessionStorage.setItem('sessionObj', JSON.stringify(sessionObj));
         console.log('sessionObj', sessionObj);
@@ -76,7 +82,7 @@ const isMobile = (eventType) => {
         return false;
       }
     }
-  })
+  });
 })();
 
 /*
@@ -87,10 +93,7 @@ const isMobile = (eventType) => {
  */
 (() => {
   'use strict';
-  const events = [
-    'app.record.detail.show',
-    'mobile.app.record.detail.show'
-  ];
+  const events = ['app.record.detail.show', 'mobile.app.record.detail.show'];
   kintone.events.on(events, (event) => {
     if (sessionStorage.getItem('sessionObj')) {
       const sessionObj = JSON.parse(sessionStorage.getItem('sessionObj'));
@@ -105,15 +108,21 @@ const isMobile = (eventType) => {
       if (count === 0) {
         Swal.fire({
           icon: 'success',
-          title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」には<br>対応が必要な申請はありません</span>`,
-          html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span>・ポータルへ移動<br>' + 'のどちらかを選択して下さい',
+          title:
+            '<span style="color: #0066CC; font-weight: bold;">' +
+            action +
+            'が完了しました</span><br><br>' +
+            `<span style="font-weight: bold;">「${appName}」には<br>対応が必要な申請はありません</span>`,
+          html:
+            '<span style="color: #0066CC;">・この申請に戻る</span><br>' +
+            '<span>・ポータルへ移動<br>' +
+            'のどちらかを選択して下さい',
           showCancelButton: true,
           confirmButtonText: 'この申請に戻る',
           cancelButtonText: 'ポータルへ移動',
           customClass: {
             popup: 'custom-popup',
-
-          }
+          },
         }).then((result) => {
           if (result.isConfirmed) {
             location.reload();
@@ -125,9 +134,17 @@ const isMobile = (eventType) => {
       } else {
         Swal.fire({
           icon: 'success',
-          title: '<span style="color: #0066CC; font-weight: bold;">' + action + 'が完了しました</span><br><br>' + `<span style="font-weight: bold;">「${appName}」の<br>対応必要数</span><br><br>` + `<span style="font-weight: bold;">残り：</span><span style="color: red; font-weight: bold;">${count} 件</span><br>`,
-          html: '<span style="color: #0066CC;">・この申請に戻る</span><br>' + '<span style="color: #008000;">・次の申請を見る</span><br>' +
-            '<span>・未対応の一覧へ</span><br>' + 'のどれかを選択して下さい',
+          title:
+            '<span style="color: #0066CC; font-weight: bold;">' +
+            action +
+            'が完了しました</span><br><br>' +
+            `<span style="font-weight: bold;">「${appName}」の<br>対応必要数</span><br><br>` +
+            `<span style="font-weight: bold;">残り：</span><span style="color: red; font-weight: bold;">${count} 件</span><br>`,
+          html:
+            '<span style="color: #0066CC;">・この申請に戻る</span><br>' +
+            '<span style="color: #008000;">・次の申請を見る</span><br>' +
+            '<span>・未対応の一覧へ</span><br>' +
+            'のどれかを選択して下さい',
           showCancelButton: true,
           showDenyButton: true,
           confirmButtonText: 'この申請に戻る',
@@ -136,7 +153,7 @@ const isMobile = (eventType) => {
           customClass: {
             popup: 'custom-popup',
             denyButton: 'custom-deny-button',
-          }
+          },
         }).then((result) => {
           if (result.isConfirmed) {
             console.log('result.isConfirmed');
@@ -152,7 +169,7 @@ const isMobile = (eventType) => {
       }
       return event;
     }
-  })
+  });
 })();
 
 /*
@@ -172,19 +189,23 @@ const isMobile = (eventType) => {
     'mobile.app.record.create.show',
     'mobile.app.record.edit.show',
     'mobile.app.record.detail.show',
-
   ];
   kintone.events.on(events, (event) => {
     const loginUser = kintone.getLoginUser();
-    const developerUsersArr = ['r-tanaka@wise-kansai.com', 'y-yasui@wise-kansai.com'];
-    const settingButton = document.querySelector('.gaia-argoui-app-menu-settingssplitbutton');
+    const developerUsersArr = [
+      'r-tanaka@wise-kansai.com',
+      'y-yasui@wise-kansai.com',
+    ];
+    const settingButton = document.querySelector(
+      '.gaia-argoui-app-menu-settingssplitbutton'
+    );
     if (!developerUsersArr.includes(loginUser.code)) {
       if (settingButton) {
         settingButton.style.display = 'none';
       }
     }
     return event;
-  })
+  });
 })();
 
 /*
@@ -269,7 +290,7 @@ const isMobile = (eventType) => {
       record.authorized_user_6.disabled = false;
     }
     return event;
-  })
+  });
 })();
 
 /*
@@ -280,18 +301,18 @@ const isMobile = (eventType) => {
  */
 (() => {
   'use strict';
-  const events = [
-    'app.record.detail.show',
-    'mobile.app.record.index.show'
-  ];
+  const events = ['app.record.detail.show', 'mobile.app.record.index.show'];
   kintone.events.on(events, (event) => {
     const record = event.record;
-    const withdrawalButton = document.querySelector('.gaia-app-statusbar-action-label[title="取下げ"]');
+    const withdrawalButton = document.querySelector(
+      '.gaia-app-statusbar-action-label[title="取下げ"]'
+    );
     if (withdrawalButton) {
-      withdrawalButton.closest('.gaia-app-statusbar-action').style.display = 'none';
+      withdrawalButton.closest('.gaia-app-statusbar-action').style.display =
+        'none';
     }
     return event;
-  })
+  });
 })();
 
 /*
@@ -302,10 +323,7 @@ const isMobile = (eventType) => {
  */
 (() => {
   'use strict';
-  const events = [
-    'app.record.detail.show',
-    'mobile.app.record.detail.show'
-  ];
+  const events = ['app.record.detail.show', 'mobile.app.record.detail.show'];
   kintone.events.on(events, (event) => {
     const path = '/k/v1/record/assignees.json';
     const record = event.record;
@@ -327,10 +345,14 @@ const isMobile = (eventType) => {
             const body = {
               app: 320, // todo
               id: record.$id.value,
-              assignees: [loginUser]
+              assignees: [loginUser],
             };
             try {
-              const res = await kintone.api(kintone.api.url(path, true), 'PUT', body);
+              const res = await kintone.api(
+                kintone.api.url(path, true),
+                'PUT',
+                body
+              );
               console.log(res);
               location.reload(true);
             } catch (e) {
@@ -342,13 +364,15 @@ const isMobile = (eventType) => {
             //headerMenuSpace = kintone.mobile.app.record.getHeaderMenuSpaceElement();
           } else {
             headerMenuSpace = kintone.app.record.getHeaderMenuSpaceElement();
-            headerMenuSpace.appendChild(headerMenuSpace.appendChild(proxyApprovalBtn));
+            headerMenuSpace.appendChild(
+              headerMenuSpace.appendChild(proxyApprovalBtn)
+            );
           }
         }
       }
     }
     return event;
-  })
+  });
 })();
 
 /*
@@ -361,7 +385,7 @@ const isMobile = (eventType) => {
   'use strict';
   const events = [
     'app.record.detail.process.proceed',
-    'mobile.app.record.detail.process.proceed'
+    'mobile.app.record.detail.process.proceed',
   ];
   kintone.events.on(events, async (event) => {
     const record = event.record;
@@ -385,7 +409,8 @@ const isMobile = (eventType) => {
     const authorizer6 = record.authorizer_6.value;
     const applicationNotifiedUsers = record.application_notified_users.value;
     const approvalNotifiedUsers = record.approval_notified_users.value;
-    const applicationNotifiedUsersText = record.application_notified_users_text.value;
+    const applicationNotifiedUsersText =
+      record.application_notified_users_text.value;
     const approvalNotifiedUsersText = record.approval_notified_users_text.value;
     const KESSAI = '決裁';
     const TORISAGE = '取下げ';
@@ -422,12 +447,34 @@ const isMobile = (eventType) => {
 
     let approvalHistory = '';
     if (nextStatus === '決裁') {
-      approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> [' + nextStatus + ']';
+      approvalHistory =
+        record.作業者.value[0].name +
+        ' [' +
+        status +
+        '] ---> [' +
+        nextStatus +
+        ']';
     } else {
       if (extractNum(nextStatus)) {
-        approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> ' + record[`authorized_user_${extractNum(nextStatus)}`].value[0].name + ' [' + nextStatus + ']';
+        approvalHistory =
+          record.作業者.value[0].name +
+          ' [' +
+          status +
+          '] ---> ' +
+          record[`authorized_user_${extractNum(nextStatus)}`].value[0].name +
+          ' [' +
+          nextStatus +
+          ']';
       } else {
-        approvalHistory = record.作業者.value[0].name + ' [' + status + '] ---> ' + record.作成者.value.name + ' [' + nextStatus + ']';
+        approvalHistory =
+          record.作業者.value[0].name +
+          ' [' +
+          status +
+          '] ---> ' +
+          record.作成者.value.name +
+          ' [' +
+          nextStatus +
+          ']';
       }
     }
 
@@ -436,9 +483,11 @@ const isMobile = (eventType) => {
     // - 最新の承認者欄へ値をセット
     record.recent_authorizer_comment.value = comment;
     record.request_approval_comment.value = '';
-    record.recent_authorizer.value = [{
-      code: worker
-    }];
+    record.recent_authorizer.value = [
+      {
+        code: worker,
+      },
+    ];
 
     // - 現在の通知先の設定
     let currentMailAddress = '';
@@ -556,93 +605,107 @@ const isMobile = (eventType) => {
     }
 
     // 処理者の社員番号と部署を取得
-    const workerEmployeeId = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {
-      code: worker
-    }).then((resp) => {
-      return resp.users[0].employeeNumber;
-    });
-    const workerDepartment = await kintone.api(kintone.api.url('/v1/user/organizations.json', true), 'GET', {
-      code: worker
-    }).then((resp) => {
-      return resp.organizationTitles[0].organization.code;
-    });
+    const workerEmployeeId = await kintone
+      .api(kintone.api.url('/v1/users.json', true), 'GET', {
+        code: worker,
+      })
+      .then((resp) => {
+        return resp.users[0].employeeNumber;
+      });
+    const workerDepartment = await kintone
+      .api(kintone.api.url('/v1/user/organizations.json', true), 'GET', {
+        code: worker,
+      })
+      .then((resp) => {
+        return resp.organizationTitles[0].organization.code;
+      });
 
     // 承認履歴アプリへのレコード追加
     const data = {
-      'source_app_id': {
-        value: appId
+      source_app_id: {
+        value: appId,
       },
-      'source_application_id': {
-        value: record.application_id.value
+      source_application_id: {
+        value: record.application_id.value,
       },
-      'source_record_id': {
-        value: record.レコード番号.value
+      source_record_id: {
+        value: record.レコード番号.value,
       },
-      'approval_date': {
-        value: formatDate(applicationDateTime)
+      approval_date: {
+        value: formatDate(applicationDateTime),
       },
-      'approval_action': {
-        value: action
+      approval_action: {
+        value: action,
       },
-      'approver_comment': {
-        value: comment
+      approver_comment: {
+        value: comment,
       },
-      'approval_status_history': {
-        value: approvalHistory
+      approval_status_history: {
+        value: approvalHistory,
       },
-      'approver_user': {
-        value: [{
-          code: worker
-        }]
+      approver_user: {
+        value: [
+          {
+            code: worker,
+          },
+        ],
       },
-      'approver_employee_id': {
-        value: workerEmployeeId
+      approver_employee_id: {
+        value: workerEmployeeId,
       },
-      'approver_dist': {
-        value: [{
-          code: workerDepartment
-        }]
+      approver_dist: {
+        value: [
+          {
+            code: workerDepartment,
+          },
+        ],
       },
-      'application_notified_users': {
-        value: applicationNotifiedUsers
+      application_notified_users: {
+        value: applicationNotifiedUsers,
       },
-      'approval_notified_users': {
-        value: approvalNotifiedUsers
+      approval_notified_users: {
+        value: approvalNotifiedUsers,
       },
-      'application_notified_users_text': {
-        value: applicationNotifiedUsersText
+      application_notified_users_text: {
+        value: applicationNotifiedUsersText,
       },
-      'approval_notified_users_text': {
-        value: approvalNotifiedUsersText
+      approval_notified_users_text: {
+        value: approvalNotifiedUsersText,
       },
-      'current_mail_address': {
-        value: currentMailAddress
+      current_mail_address: {
+        value: currentMailAddress,
       },
-      'url': {
-        value: url
+      url: {
+        value: url,
       },
-      'app_name': {
-        value: appName
+      app_name: {
+        value: appName,
       },
-      'applicant_user': {
-        value: [{
-          code: applicantUser
-        }]
+      applicant_user: {
+        value: [
+          {
+            code: applicantUser,
+          },
+        ],
       },
-      'applicant_employee_id': {
-        value: applicantEmployeeId
+      applicant_employee_id: {
+        value: applicantEmployeeId,
       },
-      'applicant_dist': {
-        value: [{
-          code: applicantDepartment
-        }]
+      applicant_dist: {
+        value: [
+          {
+            code: applicantDepartment,
+          },
+        ],
       },
-      'applicant_date': {
-        value: formatDate(new Date(action === SHINSEI ? applicationDateTime : applicantDate))
+      applicant_date: {
+        value: formatDate(
+          new Date(action === SHINSEI ? applicationDateTime : applicantDate)
+        ),
       },
-      'title': {
-        value: title
-      }
+      title: {
+        value: title,
+      },
     };
 
     const params = {
@@ -652,12 +715,16 @@ const isMobile = (eventType) => {
 
     try {
       // 承認履歴
-      await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', params);
+      await kintone.api(
+        kintone.api.url('/k/v1/record.json', true),
+        'POST',
+        params
+      );
     } catch (e) {
       console.log(e);
     }
     return event;
-  })
+  });
 })();
 
 /*
@@ -672,7 +739,7 @@ const isMobile = (eventType) => {
     'app.record.create.submit',
     'app.record.edit.submit',
     'mobile.app.record.create.submit',
-    'mobile.app.record.edit.submit'
+    'mobile.app.record.edit.submit',
   ];
 
   // 部門長グループ
@@ -757,15 +824,20 @@ const isMobile = (eventType) => {
             'authorized_user_5',
             'authorized_user_6',
             'workflow_settings_lookup',
-          ]
+          ],
         };
         const resp = await kintone.api(getPath, 'GET', body);
         if (resp.records.length === 0) {
-          console.log('取消元の申請が見つかりませんでした' + ' 取消対象の申請ID：' + cancelApplicationId);
+          console.log(
+            '取消元の申請が見つかりませんでした' +
+              ' 取消対象の申請ID：' +
+              cancelApplicationId
+          );
           return false;
         } else {
           // 設定管理から取消時の通知先を取得
-          const workflowSettingsLookup = resp.records[0].workflow_settings_lookup.value;
+          const workflowSettingsLookup =
+            resp.records[0].workflow_settings_lookup.value;
           if (workflowSettingsLookup) {
             const workflowSettingsResponse = await kintone.api(getPath, 'GET', {
               app: 353,
@@ -775,18 +847,25 @@ const isMobile = (eventType) => {
                 'cancel_application_notified_users_text',
                 'cancel_approval_notified_users',
                 'cancel_approval_notified_users_text',
-              ]
+              ],
             });
-            record.application_notified_users.value = workflowSettingsResponse.records[0].cancel_application_notified_users.value;
-            record.application_notified_users_text.value = workflowSettingsResponse.records[0].cancel_application_notified_users_text.value;
-            record.approval_notified_users.value = workflowSettingsResponse.records[0].cancel_approval_notified_users.value;
-            record.approval_notified_users_text.value = workflowSettingsResponse.records[0].cancel_approval_notified_users_text.value;
+            record.application_notified_users.value =
+              workflowSettingsResponse.records[0].cancel_application_notified_users.value;
+            record.application_notified_users_text.value =
+              workflowSettingsResponse.records[0].cancel_application_notified_users_text.value;
+            record.approval_notified_users.value =
+              workflowSettingsResponse.records[0].cancel_approval_notified_users.value;
+            record.approval_notified_users_text.value =
+              workflowSettingsResponse.records[0].cancel_approval_notified_users_text.value;
           }
           // 取消元の申請の承認者情報を取得
           for (let i = 1; i <= 6; i++) {
-            record[`authorizer_${i}`].value = resp.records[0][`authorizer_${i}`].value;
-            record[`check_skip_authorizer_${i}`].value = resp.records[0][`check_skip_authorizer_${i}`].value;
-            record[`authorized_user_${i}`].value = resp.records[0][`authorized_user_${i}`].value;
+            record[`authorizer_${i}`].value =
+              resp.records[0][`authorizer_${i}`].value;
+            record[`check_skip_authorizer_${i}`].value =
+              resp.records[0][`check_skip_authorizer_${i}`].value;
+            record[`authorized_user_${i}`].value =
+              resp.records[0][`authorized_user_${i}`].value;
           }
         }
         return event;
@@ -795,7 +874,7 @@ const isMobile = (eventType) => {
       // ログインユーザーの情報を取得
       // 優先する組織が設定されているか確認
       const userResponse = await kintone.api(userApiPath, 'GET', {
-        codes: loginUserCode
+        codes: loginUserCode,
       });
       const primaryOrgId = userResponse.users[0].primaryOrganization;
 
@@ -804,7 +883,7 @@ const isMobile = (eventType) => {
         await Swal.fire({
           title: ET0003,
           html: EM0001,
-          icon: 'error'
+          icon: 'error',
         });
         return event;
       }
@@ -812,7 +891,7 @@ const isMobile = (eventType) => {
       // 組織情報の取得
       // 優先する組織のコードと親組織のコードを取得
       const orgResponse = await kintone.api(orgApiPath, 'GET', {
-        ids: primaryOrgId
+        ids: primaryOrgId,
       });
       const primaryOrgCode = orgResponse.organizations[0].code;
       const parentOrgCode = orgResponse.organizations[0].parentCode;
@@ -864,7 +943,7 @@ const isMobile = (eventType) => {
           'group_5',
           'group_6',
           'workflow_lookup_key',
-        ]
+        ],
       };
 
       const workflowResponse = await kintone.api(getPath, 'GET', workflowBody);
@@ -874,7 +953,7 @@ const isMobile = (eventType) => {
         await Swal.fire({
           title: ET0001,
           html: EM0001,
-          icon: 'error'
+          icon: 'error',
         });
         return false;
       } else if (workflowResponse.records.length === 1) {
@@ -883,13 +962,13 @@ const isMobile = (eventType) => {
         for (let p = 0; p < workflowResponse.records.length; p++) {
           const orgArr = workflowResponse.records[p].root_department.value;
           const checkArr = [];
-          orgArr.forEach(el => {
+          orgArr.forEach((el) => {
             checkArr.push(el.code);
           });
           if (checkArr.includes(primaryOrgCode)) {
             workflow = workflowResponse.records[p];
             break;
-          };
+          }
         }
       }
       // 承認経路が一つに決定できなかった場合
@@ -897,7 +976,7 @@ const isMobile = (eventType) => {
         await Swal.fire({
           title: ET0005,
           html: EM0001,
-          icon: 'error'
+          icon: 'error',
         });
         return false;
       }
@@ -944,7 +1023,7 @@ const isMobile = (eventType) => {
         // グループから承認者を決定する場合
         if (group.length > 0 && group[0].code !== 'workflow-sales-group') {
           const groupUsers = await kintone.api(usersInGroupPath, 'GET', {
-            code: group[0].code
+            code: group[0].code,
           });
 
           if (groupUsers.users.length === 0) {
@@ -952,7 +1031,7 @@ const isMobile = (eventType) => {
             await Swal.fire({
               title: ET0002,
               html: EM0001,
-              icon: 'error'
+              icon: 'error',
             });
             return event;
           }
@@ -962,14 +1041,14 @@ const isMobile = (eventType) => {
           let orgUsers;
           let orgUserCodes;
           let matchingUsers;
-          for (let count = 0;; count++) {
+          for (let count = 0; ; count++) {
             if (count === 0) {
               orgCode = primaryOrgCode;
             } else if (count === 1) {
               orgCode = parentOrgCode;
             } else {
               const grandParentOrg = await kintone.api(orgApiPath, 'GET', {
-                codes: [orgCode]
+                codes: [orgCode],
               });
               orgCode = grandParentOrg.organizations[0].parentCode;
             }
@@ -978,11 +1057,13 @@ const isMobile = (eventType) => {
               break;
             }
             orgUsers = await kintone.api(orgUserApiPath, 'GET', {
-              code: orgCode
+              code: orgCode,
             });
-            orgUserCodes = orgUsers.userTitles.map(user => user.user.code);
+            orgUserCodes = orgUsers.userTitles.map((user) => user.user.code);
             console.log('orgUserCodes', orgUserCodes);
-            matchingUsers = groupUsers.users.filter(user => orgUserCodes.includes(user.code));
+            matchingUsers = groupUsers.users.filter((user) =>
+              orgUserCodes.includes(user.code)
+            );
             if (matchingUsers.length > 0) {
               // 承認者リストに同じ人物がいる場合
               if (assignedApprovers.includes(matchingUsers[0].code)) {
@@ -1006,7 +1087,10 @@ const isMobile = (eventType) => {
         // グループ：「ワークフロー - 営業担当」の場合
         if (group.length > 0 && group[0].code === 'workflow-sales-group') {
           // 事業所検索が"325 ワイズ関西"の場合
-          if ('client_office_lookup' in record && record.client_office_lookup.value === '325 ワイズ関西') {
+          if (
+            'client_office_lookup' in record &&
+            record.client_office_lookup.value === '325 ワイズ関西'
+          ) {
             // 承認者(担当営業)をskip
             record[`check_skip_authorizer_${i}`].value = ['Skip'];
           }
@@ -1023,15 +1107,19 @@ const isMobile = (eventType) => {
             const customerReqBody = {
               app: 29,
               query: `client_office_id = "${customerId}"`,
-              fields: ['sales', 'key_clientmaster_lookup']
-            }
-            const customerRecord = await kintone.api(getPath, 'GET', customerReqBody);
+              fields: ['sales', 'key_clientmaster_lookup'],
+            };
+            const customerRecord = await kintone.api(
+              getPath,
+              'GET',
+              customerReqBody
+            );
             const salesUserVal = customerRecord.records[0].sales.value;
             if (customerRecord.records.length === 0) {
               await Swal.fire({
                 title: ET0004,
                 html: EM0001,
-                icon: 'error'
+                icon: 'error',
               });
               return event;
             } else {
@@ -1044,7 +1132,10 @@ const isMobile = (eventType) => {
         }
       }
       for (let i = 1; i <= assignedApprovers.length; i++) {
-        if (record[`authorizer_${i}`].value === assignedApprovers[assignedApprovers.length - 1]) {
+        if (
+          record[`authorizer_${i}`].value ===
+          assignedApprovers[assignedApprovers.length - 1]
+        ) {
           record[`check_skip_authorizer_${i}`].value = [];
         }
       }
@@ -1060,7 +1151,8 @@ const isMobile = (eventType) => {
           'application_notified_users',
           'application_notified_users_text',
           'approval_notified_users',
-          'approval_notified_users_text'
+          'approval_notified_users_text',
+          'limited_view_users',
         ],
       };
       if ('workflow_type' in record) {
@@ -1078,29 +1170,50 @@ const isMobile = (eventType) => {
             break;
           }
         }
-        let approvalNotifiedUsers = settingResponse.records[0].approval_notified_users.value;
-        let approvalNotifiedUsersText = settingResponse.records[0].approval_notified_users_text.value;
+        let approvalNotifiedUsers =
+          settingResponse.records[0].approval_notified_users.value;
+        let approvalNotifiedUsersText =
+          settingResponse.records[0].approval_notified_users_text.value;
         if (lastApprover) {
-          approvalNotifiedUsers = approvalNotifiedUsers.filter(user => user.code !== lastApprover[0].code);
-          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(lastApprover[0].code, '');
-          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(',,', ',');
-          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(/^,|,$/g, '');
+          approvalNotifiedUsers = approvalNotifiedUsers.filter(
+            (user) => user.code !== lastApprover[0].code
+          );
+          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(
+            lastApprover[0].code,
+            ''
+          );
+          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(
+            ',,',
+            ','
+          );
+          approvalNotifiedUsersText = approvalNotifiedUsersText.replace(
+            /^,|,$/g,
+            ''
+          );
         }
-        record.workflow_settings_lookup.value = settingResponse.records[0].workflow_settings_lookup_key.value;
-        record.viewer_users.value = settingResponse.records[0].viewer_users.value;
-        record.application_notified_users.value = settingResponse.records[0].application_notified_users.value;
-        record.application_notified_users_text.value = settingResponse.records[0].application_notified_users_text.value;
+        record.workflow_settings_lookup.value =
+          settingResponse.records[0].workflow_settings_lookup_key.value;
+        record.viewer_users.value =
+          settingResponse.records[0].viewer_users.value;
+        record.application_notified_users.value =
+          settingResponse.records[0].application_notified_users.value;
+        record.application_notified_users_text.value =
+          settingResponse.records[0].application_notified_users_text.value;
         record.approval_notified_users.value = approvalNotifiedUsers;
         record.approval_notified_users_text.value = approvalNotifiedUsersText;
+        if (record.private_after_approval.value.length > 0) {
+          record.target_users.value =
+            settingResponse.records[0].limited_view_users.value;
+        }
       }
       return event;
     } catch (error) {
       console.error('Error in workflow approval route:', error);
       await Swal.fire({
         html: `${error.message}<br><br>管理者に問い合わせをお願いします`,
-        icon: 'error'
+        icon: 'error',
       });
-      return event;
+      return false;
     }
   });
 })();
@@ -1114,10 +1227,7 @@ const isMobile = (eventType) => {
 (() => {
   'use strict';
   const spaceId = 'input_comment_button';
-  const events = [
-    'app.record.detail.show',
-    'mobile.app.record.detail.show'
-  ];
+  const events = ['app.record.detail.show', 'mobile.app.record.detail.show'];
   kintone.events.on(events, (event) => {
     const record = event.record;
     const recordId = record.$id.value;
@@ -1153,18 +1263,18 @@ const isMobile = (eventType) => {
       setTimeout(function () {
         window.scrollTo({
           top: document.body.scrollHeight,
-          behavior: 'auto'
+          behavior: 'auto',
         });
       }, 500);
-    }
+    };
     // ボタン設置
     space.appendChild(inputCommentButton);
-  })
+  });
 })();
 
 // 二つの配列内で完全一致する要素を取得する
 function findMatchingElements(arr1, arr2) {
-  let codeArr = arr1.map(e => e.code);
+  let codeArr = arr1.map((e) => e.code);
   let matchingArr = [];
   codeArr.forEach((e, i) => {
     if (arr2.includes(e)) {
@@ -1205,12 +1315,12 @@ function formatDate(date) {
   // 監視オプション（DOMの子要素追加を監視）
   const config = {
     childList: true,
-    subtree: true
+    subtree: true,
   };
 
   // ボタンのテキストに基づいて適用するCSSを設定
   const buttonStyles = {
-    "「自分の対応待ち」 一覧を表示": {
+    '「自分の対応待ち」 一覧を表示': {
       css: `
                 font-size: 14px;
                 padding: 0.8rem;
@@ -1236,9 +1346,9 @@ function formatDate(date) {
                 background-position: 5px 5px !important;
                 background-color: #c9171e !important;
                 border: 2px solid #c9171e !important;
-            `
+            `,
     },
-    "「自分の作成分」 一覧を表示": {
+    '「自分の作成分」 一覧を表示': {
       css: `
                 font-size: 14px;
                 padding: 0.8rem;
@@ -1264,9 +1374,9 @@ function formatDate(date) {
                 background-position: 5px 5px !important;
                 background-color: #1738c9 !important;
                 border: 2px solid #1738c9 !important;
-            `
+            `,
     },
-    "「承認済みの全件」 一覧を表示": {
+    '「承認済みの全件」 一覧を表示': {
       css: `
                 font-size: 14px;
                 padding: 0.8rem;
@@ -1292,9 +1402,9 @@ function formatDate(date) {
                 background-position: 5px 5px !important;
                 background-color: #0d6909 !important;
                 border: 2px solid #0d6909 !important;
-            `
+            `,
     },
-    "取下げ": {
+    取下げ: {
       css: `
                 font-size: 14px;
                 padding-right: 0.7rem;
@@ -1316,9 +1426,9 @@ function formatDate(date) {
                 border: 2px solid #c9171e !important;
                 background: url("https://img.icons8.com/windows/24/c9171e/hand.png") no-repeat !important;
                 background-position: 5px 5px !important;
-            `
+            `,
     },
-    "代理承認": {
+    代理承認: {
       css: `
                 position: relative;
                 left: 40px;
@@ -1337,9 +1447,9 @@ function formatDate(date) {
                 background: url(https://img.icons8.com/ios-glyphs/24/000080/gender-neutral-user.png) no-repeat !important;
                 background-position: 7px 5px !important;
                 background-color: #ffffff !important;
-            `
+            `,
     },
-    "レコード流用": {
+    レコード流用: {
       css: `
                 font-size: 14px;
                 padding-right: 0.7rem;
@@ -1361,9 +1471,9 @@ function formatDate(date) {
                 border: 2px solid #228b22 !important;
                 background: url("https://img.icons8.com/glyph-neue/24/228b22/share-3.png") no-repeat !important;
                 background-position: 5px 5px !important;
-            `
+            `,
     },
-    "取消申請": {
+    取消申請: {
       css: `
                 font-size: 14px;
                 padding-right: 0.7rem;
@@ -1385,14 +1495,14 @@ function formatDate(date) {
                 border: 2px solid #000 !important;
                 background: url(https://img.icons8.com/ios-glyphs/24/000/cancel.png) no-repeat !important;
                 background-position: 5px 5px !important;
-            `
-    }
+            `,
+    },
   };
 
   // MutationObserverのコールバック関数
   const observerCallback = (mutationsList, observer) => {
-    mutationsList.forEach(mutation => {
-      mutation.addedNodes.forEach(addedNode => {
+    mutationsList.forEach((mutation) => {
+      mutation.addedNodes.forEach((addedNode) => {
         // 追加されたノードがボタン要素か確認
         if (addedNode.nodeName === 'BUTTON') {
           // ボタンのテキストがターゲットのボタンテキストと一致するか確認
@@ -1401,7 +1511,7 @@ function formatDate(date) {
           // 一致するボタンがあれば、そのCSSを適用
           if (buttonStyles[buttonText]) {
             // インラインスタイルを適用
-            addedNode.setAttribute("style", buttonStyles[buttonText].css);
+            addedNode.setAttribute('style', buttonStyles[buttonText].css);
 
             // ボタンにhoverのスタイルを適用
             const hoverStyle = buttonStyles[buttonText].hoverCss;
@@ -1445,38 +1555,50 @@ function formatDate(date) {
 (() => {
   'use strict';
   kintone.events.on('app.record.detail.show', (event) => {
-    kintone.api(kintone.api.url('/k/v1/app/form/fields', true), 'GET', {
-      app: kintone.app.getId()
-    }).then((response) => {
-      Object.keys(response.properties).filter((fieldCode) => {
-        return response.properties[fieldCode].type === 'CHECK_BOX';
-      }).map((fieldCode) => {
-        return {
-          code: fieldCode,
-          options: Object.keys(response.properties[fieldCode].options).map((option) => {
-            return response.properties[fieldCode].options[option];
-          }).sort((a, b) => {
-            if (a.index < b.index) return -1;
-            return 1;
+    kintone
+      .api(kintone.api.url('/k/v1/app/form/fields', true), 'GET', {
+        app: kintone.app.getId(),
+      })
+      .then((response) => {
+        Object.keys(response.properties)
+          .filter((fieldCode) => {
+            return response.properties[fieldCode].type === 'CHECK_BOX';
           })
-        };
-      }).forEach(async (property) => {
-        const originElement = kintone.app.record.getFieldElement(property.code);
-        const checkboxElement = new Kuc.Checkbox({
-          // name: property.code,
-          items: property.options.map((option) => {
+          .map((fieldCode) => {
             return {
-              value: option.label
+              code: fieldCode,
+              options: Object.keys(response.properties[fieldCode].options)
+                .map((option) => {
+                  return response.properties[fieldCode].options[option];
+                })
+                .sort((a, b) => {
+                  if (a.index < b.index) return -1;
+                  return 1;
+                }),
             };
-          }),
-          value: event.record[property.code].value,
-          className: 'kuc-checkbox-style',
-          disabled: true
-        });
+          })
+          .forEach(async (property) => {
+            const originElement = kintone.app.record.getFieldElement(
+              property.code
+            );
+            const checkboxElement = new Kuc.Checkbox({
+              // name: property.code,
+              items: property.options.map((option) => {
+                return {
+                  value: option.label,
+                };
+              }),
+              value: event.record[property.code].value,
+              className: 'kuc-checkbox-style',
+              disabled: true,
+            });
 
-        await originElement.parentNode.insertBefore(checkboxElement, originElement);
-        await originElement.parentNode.removeChild(originElement);
+            await originElement.parentNode.insertBefore(
+              checkboxElement,
+              originElement
+            );
+            await originElement.parentNode.removeChild(originElement);
+          });
       });
-    });
   });
 })();
