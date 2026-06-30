@@ -1041,6 +1041,7 @@ const isMobile = (eventType) => {
           let orgUsers;
           let orgUserCodes;
           let matchingUsers;
+          let isApproverFound = false;
           for (let count = 0; ; count++) {
             if (count === 0) {
               orgCode = primaryOrgCode;
@@ -1052,7 +1053,7 @@ const isMobile = (eventType) => {
               });
               orgCode = grandParentOrg.organizations[0].parentCode;
             }
-            if (orgCode === 'wisekansai') {
+            if (orgCode === 'wisekansai' || !orgCode) {
               // 組織コード：wisekansaiの場合
               break;
             }
@@ -1066,6 +1067,7 @@ const isMobile = (eventType) => {
             );
             if (matchingUsers.length > 0) {
               // 承認者リストに同じ人物がいる場合
+              isApproverFound = true;
               if (assignedApprovers.includes(matchingUsers[0].code)) {
                 record[`check_skip_authorizer_${i}`].value = ['Skip'];
               } else {
@@ -1083,6 +1085,14 @@ const isMobile = (eventType) => {
               break;
             }
           }
+
+          // ★ループ終了後、見つかっていなければSkip
+          if (!isApproverFound) {
+            console.log(
+              `[デバッグ] 承認者（グループ: ${group[0].code}）が見つからなかったため、Skip処理を行います。`
+            );
+            record[`check_skip_authorizer_${i}`].value = ['Skip'];
+          }
         }
         // グループ：「ワークフロー - 営業担当」の場合
         if (group.length > 0 && group[0].code === 'workflow-sales-group') {
@@ -1096,11 +1106,18 @@ const isMobile = (eventType) => {
           }
           // 'sales_user'フィールドが存在する場合
           if ('sales_user' in record) {
-            if (record.sales_user.value[0].code === loginUserCode) {
+            if (record.sales_user.value && record.sales_user.value.length > 0) {
+              if (record.sales_user.value[0].code === loginUserCode) {
+                record[`check_skip_authorizer_${i}`].value = ['Skip'];
+              }
+              record[`authorized_user_${i}`].value = record.sales_user.value;
+              record[`authorizer_${i}`].value = record.sales_user.value[0].code;
+            } else {
+              console.log(
+                '[デバッグ] 営業担当(sales_user)が空のため、Skip処理を行います。'
+              );
               record[`check_skip_authorizer_${i}`].value = ['Skip'];
             }
-            record[`authorized_user_${i}`].value = record.sales_user.value;
-            record[`authorizer_${i}`].value = record.sales_user.value[0].code;
           } else {
             // 顧客事業所マスタからレコードを取得
             const customerId = record.client_office_id.value;
@@ -1114,18 +1131,23 @@ const isMobile = (eventType) => {
               'GET',
               customerReqBody
             );
-            const salesUserVal = customerRecord.records[0].sales.value;
             if (customerRecord.records.length === 0) {
-              await Swal.fire({
-                title: ET0004,
-                html: EM0001,
-                icon: 'error',
-              });
-              return event;
+              // エラーで止めずSkipする
+              console.log(
+                '[デバッグ] 顧客情報が存在しないため、営業担当者の検索をSkipします。'
+              );
+              record[`check_skip_authorizer_${i}`].value = ['Skip'];
             } else {
-              if (salesUserVal.length > 0) {
+              const salesUserVal = customerRecord.records[0].sales.value;
+              if (salesUserVal && salesUserVal.length > 0) {
                 record[`authorized_user_${i}`].value = salesUserVal;
                 record[`authorizer_${i}`].value = salesUserVal[0].code;
+              } else {
+                // 顧客マスタ側に営業担当が未設定の場合もSkip
+                console.log(
+                  '[デバッグ] 顧客情報に営業担当が設定されていないため、Skip処理を行います。'
+                );
+                record[`check_skip_authorizer_${i}`].value = ['Skip'];
               }
             }
           }
@@ -1163,7 +1185,7 @@ const isMobile = (eventType) => {
       }
       const settingResponse = await kintone.api(getPath, 'GET', settingBody);
       if (settingResponse.records.length > 0) {
-        let lastApprover = '';
+        let lastApprover = [];
         for (let t = 6; t > 0; t--) {
           if (record[`check_skip_authorizer_${t}`].value.length === 0) {
             lastApprover = record[`authorized_user_${t}`].value;
@@ -1515,7 +1537,7 @@ function formatDate(date) {
 
             // ボタンにhoverのスタイルを適用
             const hoverStyle = buttonStyles[buttonText].hoverCss;
-            const buttonId = addedNode.id;
+            let buttonId = addedNode.id;
             if (!buttonId) {
               buttonId = 'button-' + Date.now(); // 重複しないIDを生成
               addedNode.id = buttonId;
